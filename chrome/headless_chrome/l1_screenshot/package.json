@@ -1,0 +1,15 @@
+{
+    "name": "headless_chrome",
+    "version": "1.0.0",
+    "description": "it test demo of chrome headless mode",
+    "main": "index.js",
+    "scripts": {
+        "dev": "node index.js"
+    },
+    "author": "Seed Huang",
+    "license": "ISC",
+    "dependencies": {
+        "chrome-launcher": "^0.3.0",
+        "chrome-remote-interface": "^0.23.3"
+    }
+}

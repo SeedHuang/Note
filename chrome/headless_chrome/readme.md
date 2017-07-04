@@ -28,3 +28,6 @@ chrome-canary --headless --disable-gpu --screenshot https://www.baidu.com
 # 打开远程调试模式
 chrome-canary --headless --disable-gpu --remote-debugging-port=9222 https://www.baidu.com
 ```
+
+更强大的功能，使用命令行绝对不是目的这样也搞不定plantomJS, 接下主要讲加一下和nodejs结合，我们先截个屏。
+- [lesson 1 Screen Shot](./l1_screenshot);
