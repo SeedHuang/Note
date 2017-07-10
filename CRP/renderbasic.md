@@ -61,7 +61,7 @@ DOM树的顶端是`document`节点，之后看一下，为什么dom树叫树，�
 
 > repainting:     we need to rerender every pixel and figure out what the color it is(costly), redrawing means we already know the color of pixel and it need to display it(cheap).
 
-### Stacking Contenxt
+#### Stacking Contenxt
 
 > Paint order of a stacking Context
  - Backgrounds and borders;
@@ -70,13 +70,28 @@ DOM树的顶端是`document`节点，之后看一下，为什么dom树叫树，�
  - z-index == 0 and/or absolute positioned children
  - Postive z-index
 
-### Reasons to Make a Composited Layer
+#### Reasons to Make a Composited Layer
 合成可以让渲染子树从缓存和分组中中收益：
 - 更容易将某些效果应用于子树
     - e.g. opacity, transforms, filters, reflections
-
 - 元素移动时不会触发重绘
     - e.g. scrolling, fixed-position elements
-
 - 对于需要使用硬件加速的内容更加实用
     - e.g. video, webGL
+- 保持正常的绘制顺序
+- 确保样式属性正确传播到合成图层树
+
+
+### 重叠测试（Overlapping Test）
+目的：通过避免创建不需要创建的合成层来节省内存；
+对大多数RenderLayers需要昂贵的转换界限
+合成原因取决于布局
+
+
+#### 合成中的主要计算
+- 确定我们可能要复合每个RenderLayer的原因
+- 将每个RenderLayer分配给合成背景
+- 创建合成的GraphicsLayer树
+    - 根据需要分配／销毁GraphicsLayer
+    - 把这些层拼成一棵树
+    - 初始化树的所有属性（例如位置，大小，不透明度，变换，背面可见性等）
