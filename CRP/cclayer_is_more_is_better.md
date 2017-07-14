@@ -1,6 +1,6 @@
 ## Composited Layer with Render
 
-有好几种方式会生成Composited Layer, 那是不是Composited Layer越多越好呢？答案是No，Absolutely not，在dom数量一致的情况下：
+Composited Layer越多越好呢？答案是No，Absolutely not，在dom数量一致的情况下：
 ```
 <body>
         <div class="content">白日依山尽，黄河入海流，如穷千里目，更上一层楼；白日依山尽，黄河入海流，如穷千里目，更上一层楼；白日依山尽，黄河入海流，如穷千里目，更上一层楼</div>
