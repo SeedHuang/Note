@@ -12,15 +12,9 @@
 <img src="./img/scroll.png" style="max-width:300px"/>
 - “position:absolute, relative, fixed, sticky”,“opacity”,“reflection”
 这些属性如果是单独在页面显示的情况下是不会出现单独的GraphicsLayer，触发的效果都是这些属性位于一个GraphicsLayer之上，而“transform”和“scroll”类型都是可以自己单独成层的，并且这些分层的效果不太一样；
-
     - 合并同类项型
-    
     - 各自为营型
 
         - fixed:
 
         <img src="./img/fixedposition.png" style="max-width:400px"/>
-
-        图中层次形成原因，首先我们来看一下源码
-        首先我们看到图中有一个层的名字叫***#document***，
-        在其之上有一个GL的名字叫做`transform:translate3d(0,0,0)`,这是一个3d transform，固定会生成一个GraphicsLayer。在其之上满足GraphicsLayer形成条件的RenderLayer都会成为新的GraphicsLayer
