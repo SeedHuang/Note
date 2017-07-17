@@ -17,4 +17,8 @@
     - 合并同类项型
     - 各自为营型
         - fixed:
-        <img src="./img/fixedposition.png" style="max-width:400px"/>
+        <img src="./img/fixedposition.png" width="400px"/>
+        
+        图中层次形成原因，首先我们来看一下源码
+        首先我们看到图中有一个层的名字叫***#document***，
+        在其之上有一个GL的名字叫做`transform:translate3d(0,0,0)`,这是一个3d transform，固定会生成一个GraphicsLayer。在其之上满足GraphicsLayer形成条件的RenderLayer都会成为新的GraphicsLayer
