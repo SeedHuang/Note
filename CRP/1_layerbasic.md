@@ -17,7 +17,7 @@
     - 合并同类项型
     - 各自为营型
         - fixed:
-        <img src="./img/fixedposition.png" width="400px"/>
+        <img src="./img/fixedposition.png" width="500px"/>
 
         图中层次形成原因，首先我们来看一下源码
         首先我们看到图中有一个层的名字叫***document***，
