@@ -16,7 +16,5 @@
 这些属性如果是单独在页面显示的情况下是不会出现单独的GraphicsLayer，触发的效果都是这些属性位于一个GraphicsLayer之上，而“transform”和“scroll”类型都是可以自己单独成层的，并且这些分层的效果不太一样；
     - 合并同类项型
     - 各自为营型
-
         - fixed:
-
         <img src="./img/fixedposition.png" style="max-width:400px"/>
