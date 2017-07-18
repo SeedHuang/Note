@@ -19,10 +19,10 @@
         > 同种类型的指的是满足relative或者absolute或者opacity的一种情况即可，这几种类型都会相互合并。
 
             - 同种类型，没有重叠的情况：
-            <img src="./img/relatedposition.png" width="500px"/>
+<img src="./img/relatedposition.png" width="500px"/>
             第一个会单独形成一个GraphicsLayer，其余同种类型会合成一个GraphicsLayer。
             - 同种类型，发生重叠情况：
-            <img src="./img/relatedposition2.png" width="500px"/>
+<img src="./img/relatedposition2.png" width="500px"/>
             同种类型都是如果有一个position:relative的RenderLayer，重叠在一个position:relative的GraphicsLayer之上，该renderLayer会与GraphicsLayer合并。
 
     - 各自为营型
