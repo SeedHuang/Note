@@ -17,8 +17,10 @@
     - 合并类型
         - relative／absoluste／opacity／mask:
             - 同种类型，没有重叠的情况：
-            <img src="./img/relatedposition.png" width="500px"/>
-            第一个会单独形成一个GraphicsLayer，其余同种类型会合成一个GraphicsLayer。
+
+                <img src="./img/relatedposition.png" width="500px"/>
+
+                第一个会单独形成一个GraphicsLayer，其余同种类型会合成一个GraphicsLayer。
 
             - 同种类型，发生重叠情况：
 <img src="./img/relatedposition2.png" width="500px"/>
