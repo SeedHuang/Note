@@ -25,7 +25,9 @@
     <img src="./img/compsitedlayer.png" width="500px"/>
 
     - 发生重叠情况：
+
     <img src="./img/relatedposition2.png" width="500px"/>
+
     如果有一个合并类型的RenderLayer，重叠在一个position:relative的GraphicsLayer之上，该renderLayer会与GraphicsLayer合并。
 
 - 各自为营型
@@ -104,4 +106,5 @@ renderLayer之间的合并有时会出现一些问题，通过这些问题我们
 
 
 <img src="./img/renderlayer2.png" width="400px"/>
+
 有三个红点显示在左上角，原本被遮罩的红点显示出来了，但底部的绿色没有显示。这个说明了r由renderObject升级成了一个renderLayer，而renderLayer之间进行了合并。
