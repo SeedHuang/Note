@@ -23,17 +23,20 @@
                 第一个会单独形成一个GraphicsLayer，其余同种类型会合成一个GraphicsLayer。
 
             - 同种类型，发生重叠情况：
+
 <img src="./img/relatedposition2.png" width="500px"/>
+
             同种类型都是如果有一个position:relative的RenderLayer，重叠在一个position:relative的GraphicsLayer之上，该renderLayer会与GraphicsLayer合并。
 
     - 各自为营型
         - fixed／transform／animation／relection／will-change:transform,opacity:
-        <img src="./img/fixedposition.png" width="500px"/>
 
-        图中层次形成原因，首先我们来看一下源码
-        首先我们看到图中有一个层的名字叫 ***document***，
-        在其之上有一个GL的名字叫做`transform:translate3d(0,0,0)`,这是一个3d transform，固定会生成一个GraphicsLayer。在其之上满足GraphicsLayer形成条件的RenderLayer都会成为新的GraphicsLayer;
-        ***will-change*** 是chrome59以上的一个功能，作用是会给一个未来有个能做动画的元素生成一个单独的GraphicsLayer，以免在动画开始的时候计算分离出单独的GraphicsLayer，这样会产生延迟。
+            <img src="./img/fixedposition.png"  width="500px"/>
+
+            图中层次形成原因，首先我们来看一下源码
+            首先我们看到图中有一个层的名字叫 ***document***，
+            在其之上有一个GL的名字叫做`transform:translate3d(0,0,0)`,这是一个3d transform，固定会生成一个GraphicsLayer。在其之上满足GraphicsLayer形成条件的RenderLayer都会成为新的GraphicsLayer;
+            ***will-change*** 是chrome59以上的一个功能，作用是会给一个未来有个能做动画的元素生成一个单独的GraphicsLayer，以免在动画开始的时候计算分离出单独的GraphicsLayer，这样会产生延迟。
 
 ### 合成层中容易遇到的问题。
 renderLayer之间的合并有时会出现一些问题，通过这些问题我们可以更加深入的了解一下RenderLayer和GraphicsLayer之间的一些区别。之前说了“不是没有一个renderObject都可以成一个renderLayer的，并且并不是每一个renderLayer都可以生成一个GraphicsLayer”，所以一般情况下很难看出哪些是RenderLayer，但是根据部分RenderLayer之间会合并的情况，可以大概看一下RenderLayer如何合成在一起的。
