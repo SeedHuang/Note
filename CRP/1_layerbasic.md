@@ -82,7 +82,7 @@ renderLayer之间的合并有时会出现一些问题，通过这些问题我们
 
 
 
-    <img src="./img/renderlayer1.png" width="400px"/>
+<img src="./img/renderlayer1.png" width="400px"/>
 
 - 再给r添加上`position:relative`之后，如下
 ```
