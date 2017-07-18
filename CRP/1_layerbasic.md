@@ -81,14 +81,18 @@ renderLayer之间的合并有时会出现一些问题，通过这些问题我们
 </html>
 ```
 
-- 首先`position:fixed`,`positioin:relative`,都会创建自己的renderLayer，如图上所示，由于`fixedelement`覆盖在`relatedelementcontainer`之上，并且由于body的内容没有产生滚动，所以`fixedelement`与`relatedelementcontainer`与 `document`层都合并成了一个GraphicsLayer。
-> 注意此时relatedelementcontainer中r没有`position:relative`属性
+    - 首先`position:fixed`,`positioin:relative`,都会创建自己的renderLayer，如图上所示，由于`fixedelement`覆盖在`relatedelementcontainer`之上，并且由于body的内容没有产生滚动，所以`fixedelement`与`relatedelementcontainer`与 `document`层都合并成了一个GraphicsLayer。
+
+
+    > 注意此时relatedelementcontainer中r没有`position:relative`属性
 
 
 
-<img src="./img/renderlayer1.png" width="400px"/>
+    <img src="./img/renderlayer1.png" width="400px"/>
 
-- 再给r添加上`position:relative`之后，如下
+    - 再给r添加上`position:relative`之后，如下
+
+
 ```
 .r {
         position: relative;
@@ -98,5 +102,7 @@ renderLayer之间的合并有时会出现一些问题，通过这些问题我们
         background: red;
 }
 ```
+
+
 <img src="./img/renderlayer2.png" width="400px"/>
 有三个红点显示在左上角，原本被遮罩的红点显示出来了，但底部的绿色没有显示。这个说明了r由renderObject升级成了一个renderLayer，而renderLayer之间进行了合并。
