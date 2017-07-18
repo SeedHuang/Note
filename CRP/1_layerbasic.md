@@ -16,6 +16,7 @@
 这些属性如果是单独在页面显示的情况下是不会出现单独的GraphicsLayer，触发的效果都是这些属性位于一个GraphicsLayer之上，而“transform”和“scroll”类型都是可以自己单独成层的，并且这些分层的效果不太一样；
     - 合并类型
         - relative／absoluste／opacity／mask:
+
         > 同种类型的指的是满足relative或者absolute或者opacity的一种情况即可，这几种类型都会相互合并。
 
             - 同种类型，没有重叠的情况：
