@@ -15,15 +15,16 @@
 - “position:absolute, relative, fixed, sticky”,“opacity”,“reflection”,“will-change:transform,opacity”
 这些属性如果是单独在页面显示的情况下是不会出现单独的GraphicsLayer，触发的效果都是这些属性位于一个GraphicsLayer之上，而“transform”和“scroll”类型都是可以自己单独成层的，并且这些分层的效果不太一样；
 - 合并类型（relative／absoluste／opacity／mask）:
-    - 同种类型，没有重叠的情况：
+    - 没有重叠的情况：
     <img src="./img/relatedposition.png" width="500px"/>
     第一个会单独形成一个GraphicsLayer，其余同种类型会合成一个GraphicsLayer。
+    
+    **relative/opacity混合效果也是一样的**
+    <img src="./img/compsitedlayer.png" width="500px"/>
 
-- 同种类型，发生重叠情况：
-
-<img src="./img/relatedposition2.png" width="500px"/>
-
-同种类型都是如果有一个position:relative的RenderLayer，重叠在一个position:relative的GraphicsLayer之上，该renderLayer会与GraphicsLayer合并。
+    - 发生重叠情况：
+    <img src="./img/relatedposition2.png" width="500px"/>
+    如果有一个合并类型的RenderLayer，重叠在一个position:relative的GraphicsLayer之上，该renderLayer会与GraphicsLayer合并。
 
 - 各自为营型
     - fixed／transform／animation／relection／will-change:transform,opacity:
