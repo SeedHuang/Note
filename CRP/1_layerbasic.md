@@ -1,4 +1,4 @@
-# What's layers
+# 深入渲染
 
 前端遇见最多的事情就是渲染了，比如改变大小，改变颜色，或者插入一个新节点。都会促使屏幕上的显示内容发生变化，那我们来看一下，在这些操作过程中到底都发生了一些什么？
 
@@ -6,7 +6,48 @@
 这是一个复杂的过程：下图简单的讲述了这个过程，当中还涉及到其他优化的知识，我们稍后再继续深入。
 <img src="./img/layers.png" style="background:white"/>
 
-我们来看一下和前端最有关的RenderLayer和GraphicsLayer，在一些情况下RenderLayer和GraphicsLayer是可以转换的，我们来深入了解一下：
+### Layer
+从上文看见整个形成过程中，只有两个层一个RenderLayer，一个是GraphicsLayer，对两者形成的条件进行比较
+
+RenderLayer             | GraphicsLayer
+------------------------|----------------------
+页面元素的根目录           | #document
+显示制定CSS位置的RenderObject节点。         | RenderLayer有一个Z坐标比自己小的兄弟节点，且该节点是一个合成层。
+有透明效果的RenderObject | RenderLayer使用了CSS透明效果的动画或者CSS变换的动画。
+节点有overflow,alpha或者反射效果的RenderObject节点 | 使用了Clip或者Reflection属性，并且他饿后代中包含一个合成层。
+使用Canvas2D和3D（WebGL）技术的Renderobject节点 | RenderLayer包含的RenderObject节点表示的使用应加速的Canvas2D或者WebGL技术。
+Video节点对应的`RenderObject`节点 | `RenderLayer`所包含的RenderObject节点表示的是使用硬件加速的视频解码技术的HTML5 video 元素
+                        |RenderLayer使用了硬件加速CSS Filters技术
+                        |RenderLayer具有CSS 3D属性或者CSS透视效果
+
+以上内容摘自《webkit技术内幕》
+
+### 为什么要有RenderLayer和GraphicsLayer
+可以看的出，`GraphicsLayer`比`RenderLayer`定义的更加严谨，在满足一定条件的情况下`RenderLayer`可以转换成`GraphicsLayer`，为什么要有`RenderLayer`和`GraphicLayer`，本身RenderLayer就可以承载渲染所需要的渲染条件了，但是`GraphicLayer`存在是为更加高效的进行渲染。`GraphicLayer`对应GPU的硬件加速渲染，GPU很擅长处理层的合并，层的合并对应的绘制方式是`draw`，`RenderLayer`渲染方式对应`paint`。这两字很容易混淆，首先字面理解，`paint`对应的彩色的绘画，如油彩画，而draw对应的是显色更简单的铅笔画，如素描。paint你需要知道每一个像素的颜色，而`draw`并不用知道，只管用规定的颜色化就可以了。这就是为什么`draw`比`paint`更快的原因——不用计算像素的颜色。
+
+所以本着好到用在刀刃上的原则，`GraphicsLayer`会用本身内容偏向稳定，而使用场景偏复杂的一些场景上。如下面会提到的场景
+
+### 层的3维空间
+#### 同一平面上的层
+<img src="./img/plainlayer.png" width="500px" style="background:#fff"/>
+`container`也是一个桌子，`RenderObject`是桌子上的花纹，而`RenderLayer`是摆在桌子上的牌，都是一个平面上的东西。所以同样都是`z-index`为0，`RenderLayer`有着比普通`RenderObject`更高的显示优先级，因为普通的`RenderObject`是属于`container`这一层的`layer`，也就是最底层。
+
+#### z-index
+那是不是`RenderObject`的显示优先级永远也无法比`RenderLayer`高了呢？不是这样的，之前提到过`z-index:0`的这个概念，对于有position概念的renderLayer,你可以将他的`z-index`设置为-1
+<img src="./img/plainlayer2.png" width="500px" style="background:#fff"/>
+台子的花纹全都到上面来了，相当于放到了台板的背面。但是非`position`类型的`RenderLayer`是无法做到这一点的。
+
+##### 重叠
+`z-index`对于`RenderLayer`主要影响在于重叠，而重叠的主要后果在于两个：`RenderLayer`的合并以及`RenderLayer`升级为`GraphicsLayer`。
+- renderLayer的合并：对于不同`z-index`的`RenderLayer`是不会产生层与层之间的合并的。合并的话题之后会详细讲述。
+- renderLayer的升级：之前的对照表中详细说明了`RenderLayer`和`GraphicsLayer`的形成原因，其中，如果一个带有`position:relative,absolute`的`RenderLayer`如果覆盖在一个`GraphicsLayer`之上的化，这个`RenderLayer`就会被升级为`GraphicsLayer`，这里要重点说一下“升级”的事情，升级实际上是一个非常花费资源的工作，比如在做动画的时候，从`RenderLayer`升级到`GraphicsLayer`会对动画执行速度产生延时，请看一下例子：
+
+
+
+
+
+
+
 - 滚动：
 不论是body上的滚动还是，单独容器上的滚动，都会产生两个GrahicsLayer，一个layer适用于存放容器的层，一个layer是用用于存放滚动内容的layer。这样做的原因是用来提高滚动时的性能。
 
@@ -28,12 +69,17 @@
 
     <img src="./img/relatedposition2.png" width="500px"/>
 
-    如果有一个合并类型的RenderLayer，重叠在一个position:relative的GraphicsLayer之上，该renderLayer会与GraphicsLayer合并。
+    如果有一个合并类型的RenderLayer，重叠在一个`position:relative`的GraphicsLayer之上，该renderLayer会与GraphicsLayer合并。
 
 - 各自为营型
-    - fixed／transform／animation／relection／will-change:transform,opacity:
+    - fixed／transform／animation／relection／will-change:transform,opacity/overflow:scroll:
 
     <img src="./img/fixedposition.png"  width="500px"/>
+
+    scroll与其他的独立层方式不同，一旦有scroll，会产生两个独立层;
+    <img src="./img/scrolllayer.png" width="500px"/>
+    通过记录我们发现scroll只会产生updatelayertree和compsitelayer的操作
+    <img src="./img/scrollcompsitelayer.png" width="500px"/>
 
 - 图中层次形成原因，首先我们来看一下源码
 首先我们看到图中有一个层的名字叫 ***document***，在其之上有一个GL的名字叫做`transform:translate3d(0,0,0)`,这是一个3d transform，固定会生成一个GraphicsLayer。在其之上满足GraphicsLayer形成条件的RenderLayer都会成为新的GraphicsLayer;***will-change*** 是chrome59以上的一个功能，作用是会给一个未来有个能做动画的元素生成一个单独的GraphicsLayer，以免在动画开始的时候计算分离出单独的GraphicsLayer，这样会产生延迟。

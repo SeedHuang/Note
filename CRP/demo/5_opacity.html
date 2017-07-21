@@ -1,0 +1,82 @@
+<html>
+
+<head>
+        <style>
+                html,
+                body {
+                        padding: 0;
+                        margin: 0;
+                }
+
+                .wrap {
+                        background: skyblue;
+                }
+
+                .fixed {
+                        position: fixed;
+                        left: 0;
+                        right: 0;
+                        height: 300px;
+                        background: blue;
+                        top: -20px;
+                }
+
+                span {
+                        display: block;
+                        padding: 20px;
+                        background: green;
+                }
+
+                .transform3d {
+                        transform: translate3d(0, 0, 0);
+                }
+
+                .absolute {
+                        position: absolute;
+                        top: 50px;
+                        left: 10px;
+                        padding: 40px;
+                        background: pink;
+                }
+
+                .opacity {
+                        /*opacity: 0.6;*/
+                        background: red;
+                        height: 100px;
+                        width: 100px;
+                        float: left;
+                        /*transform: translate3d(0, 0, 0);*/
+                        position: relative;
+                        /*-webkit-box-reflect: below;*/
+                        /*mask: url(newpic.jpg);
+                        mask-repeat: repeat-y;
+                        mask-position: center;*/
+                        /*transform: translate3d(0, 0, 0);*/
+                }
+
+                .nodisplay {
+                        display: none;
+                }
+        </style>
+        <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no,minimal-ui">
+</head>
+
+<body>
+        <div class="wrap">
+                <div class="transform3d">这个用的Transform 3d，但是实际上我一点也没动</div>
+                <div class="absolute"></div>
+        </div>
+        <div class="fixed">Winter is coming;Winter is coming;Winter is coming;Winter is coming;</div>
+        <div class="opacity">Winter is here;Winter is here;</div>
+        <div class="opacity">Winter is here;Winter is here;</div>
+        <div class="opacity">Winter is here;Winter is here;</div>
+        <div class="opacity">Winter is here;Winter is here;</div>
+        <div class="opacity">Winter is here;Winter is here;</div>
+        <div class="opacity">Winter is here;Winter is here;</div>
+        <div class="opacity">Winter is here;Winter is here;</div>
+        <div class="opacity">Winter is here;Winter is here;</div>
+        <div class="nodisplay">Winter is passed;Winter is passed;Winter is passed;</div>
+
+</body>
+
+</html>
