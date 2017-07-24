@@ -24,6 +24,16 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
 
 ### 为什么要有RenderLayer和GraphicsLayer
 可以看的出，`GraphicsLayer`比`RenderLayer`定义的更加严谨，在满足一定条件的情况下`RenderLayer`可以转换成`GraphicsLayer`，为什么要有`RenderLayer`和`GraphicLayer`，本身RenderLayer就可以承载渲染所需要的渲染条件了，但是`GraphicLayer`存在是为更加高效的进行渲染。`GraphicLayer`对应GPU的硬件加速渲染，GPU很擅长处理层的合并，层的合并对应的绘制方式是`draw`，`RenderLayer`渲染方式对应`paint`。这两字很容易混淆，首先字面理解，`paint`对应的彩色的绘画，如油彩画，而draw对应的是显色更简单的铅笔画，如素描。paint你需要知道每一个像素的颜色，而`draw`并不用知道，只管用规定的颜色化就可以了。这就是为什么`draw`比`paint`更快的原因————“不用计算像素的颜色”。
+- 滚动：
+不论是body上的滚动还是，单独容器上的滚动，都会产生两个`GrahpicsLayer`，一个layer适用于存放容器的层，一个layer是用用于存放滚动内容的layer。这样做的原因是用来提高滚动时的性能。
+
+<img src="./img/scroll.png" style="max-width:300px"/>
+
+通过记录我们发现`scroll`只会产生`Update Layers Tree`和`Composite Layers`的操作
+
+<img src="./img/scrollcompsitelayer.png" width="500px"/>
+
+在滚动的过程中没有产生任何`Paint`，只有`Update Layer Tree`和`Composite Layers`,所以极大的提高了性能。
 
 > 所以本着好到用在刀刃上的原则，`GraphicsLayer`会用本身内容偏向稳定，而使用场景偏复杂的一些场景上。
 
@@ -35,7 +45,9 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
 
 #### z-index
 那是不是`RenderObject`的显示优先级永远也无法比`RenderLayer`高了呢？不是这样的，之前提到过`z-index:0`的这个概念，对于有position概念的renderLayer,你可以将他的`z-index`设置为-1
+
 <img src="./img/plainlayer2.png" width="500px" style="background:#fff"/>
+
 台子的花纹全都到上面来了，相当于放到了台板的背面。但是非`position`类型的`RenderLayer`是无法做到这一点的。
 
 ##### 重叠
@@ -116,7 +128,7 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
     </tr>
 </table>
 
-之前曾经说过，`Paint`由于需要计算每个像素的颜色，所以非常消耗资源，而在滚动中快速触发这种`Update Layer Tree`、`Paint`、`Paint`、`Paint`、`Compsite Layers`这种过程是这种性能也是可想而知（有时会出现合并层的来不及显示的过程），如下图:
+之前曾经说过，`Paint`由于需要计算每个像素的颜色，所以非常消耗资源，而在滚动中快速触发这种`Update Layer Tree`、`Paint`、`Paint`、`Paint`、`Compsite Layers`这种过程造成的性能消耗也是可想而知（有时会出现合并层的来不及显示的过程），如下图:
 
 <img src="./img/scrollp3.png"/>
 
@@ -124,12 +136,9 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
 答案非常简单，可以将`.fixed`的node节点置于`.r`之后，或者直接提升或'.fixed'的`z-index`属性，两个方案的实质上都是提升了`z-index`；只要让覆盖在一个`GraphicsLayer`之上的条件失效就可以了。
 
 
-- 滚动：
-不论是body上的滚动还是，单独容器上的滚动，都会产生两个GrahicsLayer，一个layer适用于存放容器的层，一个layer是用用于存放滚动内容的layer。这样做的原因是用来提高滚动时的性能。
 
-<img src="./img/scroll.png" style="max-width:300px"/>
-
-- `position:absolute, relative, fixed, sticky`，`opacity`，`reflection`，`will-change:transform,opacity`
+### GraphicsLayer的类型
+`position:absolute, relative, fixed, sticky`，`opacity`，`reflection`，`will-change:transform,opacity`
 这些属性如果是单独在页面显示的情况下是不会出现单独的`GraphicsLayer`，触发的效果都是这些属性位于一个GraphicsLayer之上，而`transform`和`scroll`类型都是可以自己单独成层的，并且这些分层的效果不太一样；
 - 合并类型（relative／absoluste／opacity／mask）:
     - 没有重叠的情况：
@@ -156,12 +165,11 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
 
     <img src="./img/scrolllayer.png" width="500px"/>
 
-    通过记录我们发现`scroll`只会产生`Update Layers Tree`和`Composite Layers`的操作
 
-    <img src="./img/scrollcompsitelayer.png" width="500px"/>
 
-- 图中层次形成原因，首先我们来看一下源码
-首先我们看到图中有一个层的名字叫 ***document***，在其之上有一个GL的名字叫做`transform:translate3d(0,0,0)`,这是一个3d transform，固定会生成一个`GraphicsLayer`。在其之上满足`GraphicsLayer`形成条件的`RenderLayer`都会成为新的`GraphicsLayer`;***will-change*** 是chrome59以上的一个功能，作用是会给一个未来有个能做动画的元素生成一个单独的`GraphicsLayer`，以免在动画开始的时候计算分离出单独的`GraphicsLayer`，这样会产生延迟。
+- 图中`GraphicsLayer`形成原因，首先我们来看一下源码
+首先我们看到图中有一个层的名字叫 ***document***，在其之上有一个GL的名字叫做`transform:translate3d(0,0,0)`,这是一个3d transform，固定会生成一个`GraphicsLayer`。在其之上满足`GraphicsLayer`形成条件的`RenderLayer`都会成为新的`GraphicsLayer`;
+> ***will-change*** 是chrome59以上的一个功能，作用是会给一个未来有个能做动画的元素生成一个单独的`GraphicsLayer`，以免在动画开始的时候计算分离出单独的`GraphicsLayer`，这样会产生延迟。
 
 ### 合成层中容易遇到的问题。
 `RenderLayer`之间的合并有时会出现一些问题，通过这些问题我们可以更加深入的了解一下`RenderLayer`和`GraphicsLayer`之间的一些区别。之前说了“不是没有一个`RenderObject`都可以成一个`RenderLayer`的，并且并不是每一个`RenderLayer`都可以生成一个`GraphicsLayer`”，所以一般情况下很难看出哪些是`RenderLayer`，但是根据部分`RenderLayer`之间会合并的情况，可以大概看一下`RenderLayer`如何合成在一起的。
