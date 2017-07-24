@@ -47,7 +47,7 @@ Video节点对应的`RenderObject`节点 | `RenderLayer`所包含的RenderObject
 - `RenderLayer`升级`GraphicsLayer`的策略。
 
 
-<img src="./img/scrollc1.png?t=1" style="background:#fff"/>
+<img src="./img/scrollc1.png?t=3" style="background:#fff"/>
 
 上图中第一个图层3D模型中可以看到一共有4个GraphicsLayer
 
