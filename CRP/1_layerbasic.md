@@ -129,13 +129,13 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
 
 <img src="./img/scroll.png" style="max-width:300px"/>
 
-- “position:absolute, relative, fixed, sticky”,“opacity”,“reflection”,“will-change:transform,opacity”
-这些属性如果是单独在页面显示的情况下是不会出现单独的GraphicsLayer，触发的效果都是这些属性位于一个GraphicsLayer之上，而“transform”和“scroll”类型都是可以自己单独成层的，并且这些分层的效果不太一样；
+- `position:absolute, relative, fixed, sticky`，`opacity`，`reflection`，`will-change:transform,opacity`
+这些属性如果是单独在页面显示的情况下是不会出现单独的`GraphicsLayer`，触发的效果都是这些属性位于一个GraphicsLayer之上，而`transform`和`scroll`类型都是可以自己单独成层的，并且这些分层的效果不太一样；
 - 合并类型（relative／absoluste／opacity／mask）:
     - 没有重叠的情况：
     <img src="./img/relatedposition.png" width="500px"/>
 
-    第一个会单独形成一个GraphicsLayer，其余同种类型会合成一个GraphicsLayer。
+    第一个会单独形成一个`GraphicsLayer`，其余同种类型会合成一个`GraphicsLayer`。
 
     **relative/opacity混合效果也是一样的**
 
@@ -145,26 +145,26 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
 
     <img src="./img/relatedposition2.png" width="500px"/>
 
-    如果有一个合并类型的RenderLayer，重叠在一个`position:relative`的GraphicsLayer之上，该renderLayer会与GraphicsLayer合并。
+    如果有一个合并类型的`RenderLayer`，重叠在一个`position:relative`的`GraphicsLayer`之上，该`RenderLayer`会与`GraphicsLayer`合并。
 
 - 各自为营型
-    - fixed／transform／animation／relection／will-change:transform,opacity/overflow:scroll:
+    - `fixed`／`transform`／`animation`／`relection`／`will-change:transform,opacity`/`overflow:scroll`:
 
     <img src="./img/fixedposition.png"  width="500px"/>
 
-    scroll与其他的独立层方式不同，一旦有scroll，会产生两个独立层;
+    `scroll`与其他的独立层方式不同，一旦有`scroll`，会产生两个独立层;
 
     <img src="./img/scrolllayer.png" width="500px"/>
 
-    通过记录我们发现scroll只会产生updatelayertree和compsitelayer的操作
-    
+    通过记录我们发现`scroll`只会产生`Update Layers Tree`和`Composite Layers`的操作
+
     <img src="./img/scrollcompsitelayer.png" width="500px"/>
 
 - 图中层次形成原因，首先我们来看一下源码
-首先我们看到图中有一个层的名字叫 ***document***，在其之上有一个GL的名字叫做`transform:translate3d(0,0,0)`,这是一个3d transform，固定会生成一个GraphicsLayer。在其之上满足GraphicsLayer形成条件的RenderLayer都会成为新的GraphicsLayer;***will-change*** 是chrome59以上的一个功能，作用是会给一个未来有个能做动画的元素生成一个单独的GraphicsLayer，以免在动画开始的时候计算分离出单独的GraphicsLayer，这样会产生延迟。
+首先我们看到图中有一个层的名字叫 ***document***，在其之上有一个GL的名字叫做`transform:translate3d(0,0,0)`,这是一个3d transform，固定会生成一个`GraphicsLayer`。在其之上满足`GraphicsLayer`形成条件的`RenderLayer`都会成为新的`GraphicsLayer`;***will-change*** 是chrome59以上的一个功能，作用是会给一个未来有个能做动画的元素生成一个单独的`GraphicsLayer`，以免在动画开始的时候计算分离出单独的`GraphicsLayer`，这样会产生延迟。
 
 ### 合成层中容易遇到的问题。
-renderLayer之间的合并有时会出现一些问题，通过这些问题我们可以更加深入的了解一下RenderLayer和GraphicsLayer之间的一些区别。之前说了“不是没有一个renderObject都可以成一个renderLayer的，并且并不是每一个renderLayer都可以生成一个GraphicsLayer”，所以一般情况下很难看出哪些是RenderLayer，但是根据部分RenderLayer之间会合并的情况，可以大概看一下RenderLayer如何合成在一起的。
+`RenderLayer`之间的合并有时会出现一些问题，通过这些问题我们可以更加深入的了解一下`RenderLayer`和`GraphicsLayer`之间的一些区别。之前说了“不是没有一个`RenderObject`都可以成一个`RenderLayer`的，并且并不是每一个`RenderLayer`都可以生成一个`GraphicsLayer`”，所以一般情况下很难看出哪些是`RenderLayer`，但是根据部分`RenderLayer`之间会合并的情况，可以大概看一下`RenderLayer`如何合成在一起的。
 
 
 
