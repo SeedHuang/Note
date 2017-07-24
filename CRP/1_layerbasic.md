@@ -115,7 +115,9 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
         </td>
     </tr>
 </table>
-之前曾经说过，`Paint`由于需要计算每个像素的颜色，所以非常消耗资源，而在滚动中快速触发这种`Update Layer Tree`、`Paint`、`Paint`、`Paint`、`Compsite Layers`这种过程是这种性能也是可想而知（有时会出现合并层的来不及显示的过程），如下图
+
+之前曾经说过，`Paint`由于需要计算每个像素的颜色，所以非常消耗资源，而在滚动中快速触发这种`Update Layer Tree`、`Paint`、`Paint`、`Paint`、`Compsite Layers`这种过程是这种性能也是可想而知（有时会出现合并层的来不及显示的过程），如下图:
+
 <img src="./img/scrollp3.png"/>
 
 #### 何解决这个问题？
