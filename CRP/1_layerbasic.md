@@ -17,8 +17,8 @@ RenderLayer             | GraphicsLayer
 节点有overflow,alpha或者反射效果的RenderObject节点 | 使用了Clip或者Reflection属性，并且他饿后代中包含一个合成层。
 使用Canvas2D和3D（WebGL）技术的Renderobject节点 | RenderLayer包含的RenderObject节点表示的使用应加速的Canvas2D或者WebGL技术。
 Video节点对应的`RenderObject`节点 | `RenderLayer`所包含的RenderObject节点表示的是使用硬件加速的视频解码技术的HTML5 video 元素
-                        |RenderLayer使用了硬件加速CSS Filters技术
-                        |RenderLayer具有CSS 3D属性或者CSS透视效果
+N/A    |RenderLayer使用了硬件加速CSS Filters技术
+N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
 
 以上内容摘自《webkit技术内幕》
 
