@@ -71,6 +71,7 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
 <img src="./img/scrollp1.png" width="500px"/>
 
 这里可以看到三个`paint`:
+
 <table>
     <tr>
         <td>
@@ -90,8 +91,11 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
         </td>
     </tr>
 </table>
+
 当第一个`.r`完全移出`.fixed`的范围之后，又会出现3次`Paint`，主要主要是因为，原本单独的 `.r`层因为不在`.fixed`之上的范围，所以重新被合入到`#document`之中，而原本的`.r (50 x 150)`有会分离出一个`.r (50 x 50)`和`.r (50 x 100)`两个层,所以一共有3个`GraphicsLayer`的内容产生了改变，所以产生了3次`Paint`:
+
 <img src="./img/scrollp2.png" width="500px"/>
+
 <table>
     <tr>
         <td>
