@@ -40,12 +40,80 @@ Video节点对应的`RenderObject`节点 | `RenderLayer`所包含的RenderObject
 ##### 重叠
 `z-index`对于`RenderLayer`主要影响在于重叠，而重叠的主要后果在于两个：`RenderLayer`的合并以及`RenderLayer`升级为`GraphicsLayer`。
 - renderLayer的合并：对于不同`z-index`的`RenderLayer`是不会产生层与层之间的合并的。合并的话题之后会详细讲述。
-- renderLayer的升级：之前的对照表中详细说明了`RenderLayer`和`GraphicsLayer`的形成原因，其中，如果一个带有`position:relative,absolute`的`RenderLayer`如果覆盖在一个`GraphicsLayer`之上的化，这个`RenderLayer`就会被升级为`GraphicsLayer`，这里要重点说一下“升级”的事情，升级实际上是一个非常花费资源的工作，比如在做动画的时候，从`RenderLayer`升级到`GraphicsLayer`会对动画执行速度产生延时，请看一下例子：
+- renderLayer的升级：之前的对照表中详细说明了`RenderLayer`和`GraphicsLayer`的形成原因，其中，如果一个带有`position:relative,absolute`的`RenderLayer`如果覆盖在一个`GraphicsLayer`之上的化，这个`RenderLayer`就会被升级为`GraphicsLayer`，这里要重点说一下“升级”的事情，升级实际上是一个非常花费资源的操作，比如在做动画的时候，从`RenderLayer`升级到`GraphicsLayer`会对动画执行速度产生延时，请看一下例子：
+一下每个绿色的圆形都是一个`position:relative`的`RenderLayer`，红色区域是一个`position:fixed`的`GraphicsLayer`，我们来复习一下：
+- “所有带有位置信息的图层都会成一个`RenderLayer`”，
+- 然后提前介绍一个新知识”当`position`：fixed的元素的容器内容超过容器高度，`position:fixed`的`RenderLayer`会单独形成一个`GraphicsLayer`”
+- `RenderLayer`升级`GraphicsLayer`的策略。
 
 
+<img src="./img/scrollc1.png?t=1" style="background:#fff"/>
+
+上图中第一个图层3D模型中可以看到一共有4个GraphicsLayer
+
+```
+#document(292 x 2100)
+.fixed(292 x 150)
+.r(50 x 50)
+.r(50 x 100)
+```
+
+`#document`是根层，`.fixed`是一个`position:fixed`的层，`.r(50 x 50)`是`opacity:0.5`的层，`.r(50 x 150)`是一个3个`.r(50 x 50)`合并而来；`.r`都是因为覆盖在`.fixed`之上而形成的`GraphicsLayer`，所以其他没有覆盖其上的'.r'都没有形成对应的`GraphicsLayer`
 
 
+在滚动的过程中，由于`.fixed`的位置固定，会经历许多`.r`从`.fixed`的上方经过的过程，按照`GraphicsLayer`形成原理会多次形成`GraphicsLayer`；以下描述了滚动中出现的三种情况：
 
+<img src="./img/scrollc.png?t=1" style="background:#fff"/>
+
+- case1:之前已经描述过，这里不再累述
+- case2:是向上滚动，原本未覆盖的`RenderLayer`进入了`.fixed`的上方，所以会触发`Update Layer Tree`，然后触发三次`Paint`，最后触发`Composited Layers`；我们来查看一下`performance`:
+<img src="./img/scrollp1.png" width="500px"/>
+这里可以看到三个`paint`
+<table>
+    <tr>
+        <td>
+        Location (0, -51);
+        <nobr>Dimemsions (292 x 2100);</nobr>
+        Layer Root #document;
+        </td>
+        <td>
+        Location (0, -1);
+        <nobr>Dimemsions (50 x 50);</nobr>
+        Layer Root div.r
+        </td>
+        <td>
+        Location (0, -51);
+        <nobr>Dimemsions (50 x 150);</nobr>
+        Layer Root div.r
+        </td>
+    </tr>
+</table>
+当第一个`.r`完全移出`.fixed`的范围之后，又会出现3次`Paint`，主要主要是因为，原本单独的 `.r`层因为不在`.fixed`之上的范围，所以重新被合入到`#document`之中，而原本的`.r (50 x 150)`有会分离出一个`.r (50 x 50)`和`.r (50 x 100)`两个层,所以一共有3个`GraphicsLayer`的内容产生了改变，所以产生了3次`Paint`:
+<img src="./img/scrollp2.png" width="500px"/>
+<table>
+    <tr>
+        <td>
+        Location (0, -100);
+        <nobr>Dimemsions (292 x 2100);</nobr>
+        Layer Root #document;
+        </td>
+        <td>
+        Location (0, 0);
+        <nobr>Dimemsions (50 x 50);</nobr>
+        Layer Root div.r
+        </td>
+        <td>
+        Location (0, -51);
+        <nobr>Dimemsions (50 x 100);</nobr>
+        Layer Root div.r
+        </td>
+    </tr>
+</table>
+之前曾经说过，`Paint`由于需要计算每个像素的颜色，所以非常消耗资源，而在滚动中快速触发这种`Update Layer Tree`、`Paint`、`Paint`、`Paint`、`Compsite Layers`这种过程是这种性能也是可想而知（有时会出现合并层的来不及显示的过程），如下图
+<img src="./img/scrollp3.png"/>
+
+#### 何解决这个问题？
+答案非常简单，可以将`.fixed`的node节点置于`.r`之后，或者直接提升或'.fixed'的`z-index`属性，两个方案的实质上都是提升了`z-index`；只要让覆盖在一个`GraphicsLayer`之上的条件失效就可以了。
 
 
 - 滚动：
