@@ -153,8 +153,11 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
     <img src="./img/fixedposition.png"  width="500px"/>
 
     scroll与其他的独立层方式不同，一旦有scroll，会产生两个独立层;
+
     <img src="./img/scrolllayer.png" width="500px"/>
+
     通过记录我们发现scroll只会产生updatelayertree和compsitelayer的操作
+    
     <img src="./img/scrollcompsitelayer.png" width="500px"/>
 
 - 图中层次形成原因，首先我们来看一下源码
