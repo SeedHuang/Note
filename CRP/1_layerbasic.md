@@ -69,6 +69,7 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
 - case1:之前已经描述过，这里不再累述
 - case2:是向上滚动，原本未覆盖的`RenderLayer`进入了`.fixed`的上方，所以会触发`Update Layer Tree`，然后触发三次`Paint`，最后触发`Composited Layers`；我们来查看一下`performance`:
 <img src="./img/scrollp1.png" width="500px"/>
+
 这里可以看到三个`paint`:
 <table>
     <tr>
