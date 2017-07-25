@@ -39,4 +39,7 @@ Render Tree适用于最后渲染到页面上的树状结构，是DOM Tree和CSSO
 </html>
 ```
 ## Render树的形成
-Render树是在`Recalculate style`产生的，Recalculate的范围就是根据从跟节点开始，根据现有DOM结构，对照CSSOM结构，开始生成匹配的Render Tree（对于匹配规则当中，如果当前节点的display为none，当前节点和他的子节点就不不会出现在render树当中）
+Render树是在`Recalculate style`产生的，Recalculate的范围就是根据从跟节点开始，根据现有DOM结构，对照`CSSOM`结构，开始生成匹配的`Render Tree`（对于匹配规则当中，如果当前节点的display为none，当前节点和他的子节点就不不会出现在render树当中),但是需要主要注意的是`Recalculate Style`事件与 DOM 解析不同，该时间线不显示单独的`Parse CSS`条目，而是在这一个事件下一同捕获解析和`CSSOM`树构建，以及计算的样式的递归计算。[参考:Constructing the Object Model](https://developers.google.cn/web/fundamentals/performance/critical-rendering-path/constructing-the-object-model?hl=zh-cn)
+
+## Layout
+`Recalculate style`计算所有可见节点样式信息，但是尚未计算它们在设备`viewport`的确切位置和大小，这个就是layout的任务[参考:Render-Tree Construction, Layout, and Paint](https://developers.google.cn/web/fundamentals/performance/critical-rendering-path/render-tree-construction?hl=zh-cn)
