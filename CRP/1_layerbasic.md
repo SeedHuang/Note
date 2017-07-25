@@ -56,8 +56,8 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
         <td>没有paint</td>
     </tr>
     <tr>
-        <th><span style="font-size:12px">GraphicsLayer(opacity/background/transform2d)</span></th>
-        <th><span style="font-size:12px">RenderLayer</br>(opacity/background/transform2d)</span></th>
+        <th>GraphicsLayer</br>(opacity/background/transform2d)</th>
+        <th>RenderLayer</br>(opacity/background/transform2d)</th>
         <th>优势</th>
     </tr>
     <tr>
