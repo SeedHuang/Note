@@ -18,13 +18,13 @@
 RenderLayer             | GraphicsLayer
 ------------------------|----------------------
 页面元素的根目录           | #document
-显示制定CSS位置的RenderObject节点。         | RenderLayer有一个Z坐标比自己小的兄弟节点，且该节点是一个合成层。
-有透明效果的RenderObject | RenderLayer使用了CSS透明效果的动画或者CSS变换的动画。
-节点有overflow,alpha或者反射效果的RenderObject节点 | 使用了Clip或者Reflection属性，并且他饿后代中包含一个合成层。
-使用Canvas2D和3D（WebGL）技术的Renderobject节点 | RenderLayer包含的RenderObject节点表示的使用应加速的Canvas2D或者WebGL技术。
-video节点对应的`RenderObject`节点 | `RenderLayer`所包含的RenderObject节点表示的是使用硬件加速的视频解码技术的HTML5 video 元素
-N/A    |RenderLayer使用了硬件加速CSS Filters技术
-N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
+`RenderObject`具有`position` 样式属性的。         | `RenderLayer`覆盖在一个同级`GraphicsLayer`之上，`RenderLayer`的`z-index`大于`GraphicsLayer`。
+`RenderObject`有透明效果 | 使用CSS动画、`opacity`<1
+`RenderObject`具有overflow,alpha或者反射效果的节点 | `RenderLayer`具有`Reflection`样式属性。
+`RenderObject`使用Canvas2D和3D（WebGL）技术的`RenderObject`节点 | `RenderLayer`为`canvas`，并满足三个条件
+`RenderObject`是`video`节点 | `RenderLayer`是video并有一个有效源
+`RenderObject`具`有css filter` 样式属性    |`RenderLayer`使用了硬件加速CSS Filters技术
+`RenderObject`具有`transform` 样式属性     |`RenderLayer`具有CSS 3D属性
 
 > opacity:1 是不能提升成为`GraphicsLayer`的
 
@@ -32,8 +32,8 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
 
 ## 为什么要有RenderLayer和GraphicsLayer
 可以看的出，`GraphicsLayer`比`RenderLayer`定义的更加严谨，在满足一定条件的情况下`RenderLayer`可以转换成`GraphicsLayer`，为什么要有`RenderLayer`和`GraphicsLayer`，本身`RenderLayer`就可以承载渲染所需要的渲染条件了，但是`GraphicsLayer`存在是为更加高效的进行渲染。
-- 数量上GraphicsLayer的数量比RenderLayer数量更少，所以Paint的次数会少很多。
-- 图层操的高效，无论是GraphicsLayer还是RenderLayer都会经历一次Paint的过程（GraphicsLayer本身来自于RenderLayer），观察Performance就可以观察到有几个GraphicsLayer就有几次Paint，但是一旦GraphicsLayer形成，只要层内容本身不变，对单个图层进行位置（top,right,bottom,left）变换、透明度或者是3D transform的此类操作的性能就体现出来
+- 数量上`GraphicsLayer`的数量比`RenderLayer`数量更少，所以Paint的次数会少很多。
+- 图层操的高效，无论是`GraphicsLayer`还是`RenderLayer`都会经历一次Paint的过程（`GraphicsLayer`本身来自于RenderLayer），观察`Performance`就可以观察到有几个`GraphicsLayer`就有几次`Paint`，但是一旦`GraphicsLayer`形成，只要层内容本身不变，对单个图层进行位置（top,right,bottom,left）变换、透明度或者是3D transform的此类操作的性能就体现出来
 <table>
     <tr>
         <th>GraphicsLayer(top/right/bottom/left)</th>
