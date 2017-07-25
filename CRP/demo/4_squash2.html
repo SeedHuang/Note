@@ -1,0 +1,52 @@
+<html>
+
+<head>
+        <style>
+                html,
+                body {
+                        padding: 0;
+                        margin: 0;
+                }
+
+                .fixed {
+                        position: fixed;
+                        transform: translate3d(0, 0, 0);
+                        left: 0;
+                        right: 0;
+                        height: 400px;
+                        background: blue;
+                }
+
+                .absolute {
+                        /*opacity: 0.6;*/
+                        background: red;
+                        height: 100px;
+                        width: 100px;
+                        transform: translate3d(0, 0, 0);
+                        opacity: 0.7;
+                        position: absolute;
+                        /*-webkit-box-reflect: below;*/
+                        /*mask: url(newpic.jpg);
+                        mask-repeat: repeat-y;
+                        mask-position: center;*/
+                        /*transform: translate3d(0, 0, 0);*/
+                }
+
+                .nodisplay {
+                        display: none;
+                }
+        </style>
+        <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no,minimal-ui">
+</head>
+
+<body>
+        <div class="fixed"></div>
+        <div class="absolute">Winter is here;Winter is here;</div>
+        <div class="absolute">Winter is here;Winter is here;</div>
+        <div class="absolute">Winter is here;Winter is here;</div>
+        <div class="absolute">Winter is here;Winter is here;</div>
+        <div class="absolute">Winter is here;Winter is here;</div>
+        <div class="absolute">Winter is here;Winter is here;</div>
+</body>
+
+</html>

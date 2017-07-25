@@ -137,107 +137,72 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
 
 
 
-### GraphicsLayer的类型
-`position:absolute, relative, fixed, sticky`，`opacity`，`reflection`，`will-change:transform,opacity`
+## GraphicsLayer的类型
+`position:absolute, relative, fixed, sticky`，`opacity`，`reflection`，`will-change:transform,opacity`，`transform:translateY`
 这些属性如果是单独在页面显示的情况下是不会出现单独的`GraphicsLayer`，触发的效果都是这些属性位于一个GraphicsLayer之上，而`transform`和`scroll`类型都是可以自己单独成层的，并且这些分层的效果不太一样；
-- 合并类型（relative／absoluste／opacity／mask）:
-    - 没有重叠的情况：
-    <img src="./img/relatedposition.png" width="500px"/>
 
-    第一个会单独形成一个`GraphicsLayer`，其余同种类型会合成一个`GraphicsLayer`。
+### 合并类型（relative／absoluste／opacity／mask）:
+<img src="./img/clayer1.png" width="500px" style="background:#fff"/>
 
-    **relative/opacity混合效果也是一样的**
+第一个会单独形成一个`GraphicsLayer`，其余同种类型会合成一个`GraphicsLayer`。
 
-    <img src="./img/compsitedlayer.png" width="500px"/>
+> relative/opacity混合效果也是一样的
 
-    - 发生重叠情况：
+<img src="./img/clayer2.png?t=1" width="500px" style="background:#fff"/>
 
-    <img src="./img/relatedposition2.png" width="500px"/>
 
-    如果有一个合并类型的`RenderLayer`，重叠在一个`position:relative`的`GraphicsLayer`之上，该`RenderLayer`会与`GraphicsLayer`合并。
+### 独立型（各自为营）型 `fixed`／`transform`／`animation`／`relection`／`will-change:transform,opacity`/`overflow:scroll`:
 
-- 各自为营型
-    - `fixed`／`transform`／`animation`／`relection`／`will-change:transform,opacity`/`overflow:scroll`:
+<img src="./img/squash2.png"  width="500px"/>
 
-    <img src="./img/fixedposition.png"  width="500px"/>
+`scroll`与其他的独立层方式不同，一旦有`scroll`，会产生两个独立层;
 
-    `scroll`与其他的独立层方式不同，一旦有`scroll`，会产生两个独立层;
-
-    <img src="./img/scrolllayer.png" width="500px"/>
+<img src="./img/scrolllayer.png" width="500px"/>
 
 
 
-- 图中`GraphicsLayer`形成原因，首先我们来看一下源码
-首先我们看到图中有一个层的名字叫 ***document***，在其之上有一个GL的名字叫做`transform:translate3d(0,0,0)`,这是一个3d transform，固定会生成一个`GraphicsLayer`。在其之上满足`GraphicsLayer`形成条件的`RenderLayer`都会成为新的`GraphicsLayer`;
 > ***will-change*** 是chrome59以上的一个功能，作用是会给一个未来有个能做动画的元素生成一个单独的`GraphicsLayer`，以免在动画开始的时候计算分离出单独的`GraphicsLayer`，这样会产生延迟。
 
-### 合成层中容易遇到的问题。
-`RenderLayer`之间的合并有时会出现一些问题，通过这些问题我们可以更加深入的了解一下`RenderLayer`和`GraphicsLayer`之间的一些区别。之前说了“不是没有一个`RenderObject`都可以成一个`RenderLayer`的，并且并不是每一个`RenderLayer`都可以生成一个`GraphicsLayer`”，所以一般情况下很难看出哪些是`RenderLayer`，但是根据部分`RenderLayer`之间会合并的情况，可以大概看一下`RenderLayer`如何合成在一起的。
+### GraphicsLayer是否越多越好？
+答案是No，Absolutely not，其实大家看到，就浏览器本身实现也分成合并型和独立型两种，其目的就是在于更好的节省资源和更好的性能体验，在dom数量一致的情况下，出现多个`GraphicsLayer`和只有一个`GraphicsLayer`的性能比较：
 
-
-
-```
-    <!DOCTYPE HTML>
-    <html>
-
-    <head>
-            <style>
-                    .fixedelement {
-                            position: fixed;
-                            top: 0;
-                            left: 0;
-                            right: 0;
-                            height: 300px;
-                            background: blue;
-                    }
-
-                    .r {
-                            border-radius: 10px;
-                            height: 20px;
-                            width: 20px;
-                            background: red;
-                    }
-
-                    .relatedelementcontainer {
-                            background: green;
-                    }
-            </style>
-            <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no,minimal-ui">
-    </head>
-    <body>
-            <div class="fixedelement"></div>
-            <div class="relatedelementcontainer">
-                    <div class="r"></div>
-                    <div class="r"></div>
-                    <div class="r"></div>
-            </div>
-
-    </body>
-    </html>
-```
-
-
-
-- 首先`position:fixed`,`positioin:relative`,都会创建自己的renderLayer，如图上所示，由于`fixedelement`覆盖在`relatedelementcontainer`之上，并且由于body的内容没有产生滚动，所以`fixedelement`与`relatedelementcontainer`与 `document`层都合并成了一个GraphicsLayer。
-
-> 注意此时relatedelementcontainer中r没有`position:relative`属性
-
-<img src="./img/renderlayer1.png" width="400px"/>
-
-- 再给r添加上`position:relative`之后，如下
-
+***内容部分***
 
 ```
-.r {
-        position: relative;
-        border-radius: 10px;
-        height: 20px;
-        width: 20px;
-        background: red;
-}
+<body>
+        <div class="content">白日依山尽，黄河入海流，如穷千里目，更上一层楼；白日依山尽，黄河入海流，如穷千里目，更上一层楼；白日依山尽，黄河入海流，如穷千里目，更上一层楼</div>
+        <div class="content">白日依山尽，黄河入海流，如穷千里目，更上一层楼；白日依山尽，黄河入海流，如穷千里目，更上一层楼；白日依山尽，黄河入海流，如穷千里目，更上一层楼</div>
+        <div class="content">白日依山尽，黄河入海流，如穷千里目，更上一层楼；白日依山尽，黄河入海流，如穷千里目，更上一层楼；白日依山尽，黄河入海流，如穷千里目，更上一层楼</div>
+        <div class="content">白日依山尽，黄河入海流，如穷千里目，更上一层楼；白日依山尽，黄河入海流，如穷千里目，更上一层楼；白日依山尽，黄河入海流，如穷千里目，更上一层楼</div>
+        <div class="content">白日依山尽，黄河入海流，如穷千里目，更上一层楼；白日依山尽，黄河入海流，如穷千里目，更上一层楼；白日依山尽，黄河入海流，如穷千里目，更上一层楼</div>
+        <div class="content">白日依山尽，黄河入海流，如穷千里目，更上一层楼；白日依山尽，黄河入海流，如穷千里目，更上一层楼；白日依山尽，黄河入海流，如穷千里目，更上一层楼</div>
+        <div class="content">白日依山尽，黄河入海流，如穷千里目，更上一层楼；白日依山尽，黄河入海流，如穷千里目，更上一层楼；白日依山尽，黄河入海流，如穷千里目，更上一层楼</div>
+        <div class="content">白日依山尽，黄河入海流，如穷千里目，更上一层楼；白日依山尽，黄河入海流，如穷千里目，更上一层楼；白日依山尽，黄河入海流，如穷千里目，更上一层楼</div>
+        <div class="content">白日依山尽，黄河入海流，如穷千里目，更上一层楼；白日依山尽，黄河入海流，如穷千里目，更上一层楼；白日依山尽，黄河入海流，如穷千里目，更上一层楼</div>
+        <div class="content">白日依山尽，黄河入海流，如穷千里目，更上一层楼；白日依山尽，黄河入海流，如穷千里目， 更上一层楼；白日依山尽，黄河入海流，如穷千里目，更上一层楼
+        </div>
+</body>
 ```
 
+***数据对比***
+来看一下layer数量对性能的影响
+<table>
+    <tbody>
+        <tr>
+            <td colSpan="2">Performance table</td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;"><img src="./img/lay_more.png"/></td>
+            <td style="vertical-align:top;"><img src="./img/layer_one.png"/></td>
+        </tr>
+        <tr>
+            <td colSpan="2">Layer Veiw</td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;"><img src="./img/layer_1.png"/></td>
+            <td  style="vertical-align:top;"><img src="./img/layer_2.png"/></td>
+        </tr>
+    </tbody>
+</table>
 
-<img src="./img/renderlayer2.png" width="400px"/>
-
-有三个红点显示在左上角，原本被遮罩的红点显示出来了，但底部的绿色没有显示。这个说明了r由renderObject升级成了一个renderLayer，而renderLayer之间进行了合并。
+每个paint都意味着有一个composited layer产生，否则只会有一个layer，可以从性能对比中看到，composited layer越多，paint的次数也越多，并且composite layers的时间也就越长，对于首屏展现来说，是非常不利的。
