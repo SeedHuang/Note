@@ -1,13 +1,15 @@
-# 层的使用
+# 探究层的使用
+
+作者：黄春华
 
 前端遇见最多的事情就是渲染了，比如改变大小，改变颜色，或者插入一个新节点。都会促使屏幕上的显示内容发生变化，那我们来看一下，在了解什么是层之前，我们先来了解一下，从`Html Parse`->`GraphicsLayer Tree`在这些操作过程中到底都发生了一些什么？
 
 ## 从DOM到GraphicsLayer Tree
 这是一个复杂的过程：下图简单的讲述了这个过程。
-<img src="./img/layers.png" style="background:white"/>
+<img src="./img/layers.png?t=1" style="background:white"/>
 
 ## Layer的形成条件
-从上文看见整个形成过程中，只有两种层，一种是`RenderLayer`，一种是`GraphicsLayer`，对两者形成的条件进行比较
+从上文看见整个形成过程中，只有两种层，一种是`RenderLayer`（负责DOM子树），一种是`GraphicsLayer`（负责RenderLayer子树），对两者形成的条件进行比较
 
 RenderLayer             | GraphicsLayer
 ------------------------|----------------------
@@ -208,4 +210,14 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
     </tbody>
 </table>
 
-每个paint都意味着有一个composited layer产生，否则只会有一个layer，可以从性能对比中看到，composited layer越多，paint的次数也越多，并且composite layers的时间也就越长，对于首屏展现来说，是非常不利的。
+每个`Paint`都意味着有一个`GraphicsLayer`产生，否则只会有一个`GraphicsLayer`————`#document`，可以从性能对比中看到，`GraphicsLayer`越多，`Paint`的次数也越多，并且`Composite Layers`的时间也就越长，对于首屏展现来说，是非常不利的。
+
+## 总结
+了解层的运作原理对于前端有着非常重要意义，通过优化层的覆盖关系，了解层的合并原理，合理使用层可以增加首屏渲染速度以及提示高用户使用过程中的流畅成都，是每一个前端都必须要好好研究的。
+
+## 参考
+- 朱永盛《Webkit技术内幕》第7章渲染基础 P164，硬件加速基础 P186
+- [Tom Wiltzius《Accelerated Rendering in Chrome》](https://www.html5rocks.com/zh/tutorials/speed/layers/)
+- [Ilya Grigorik 《渲染树构建、布局及绘制》](https://developers.google.cn/web/fundamentals/performance/critical-rendering-path/render-tree-construction?hl=zh-cn)
+- [Tom Wiltzius, Vangelis Kokkevis & the Chrome Graphics team《GPU Accelerated Compositing in Chrome
+》](http://www.chromium.org/developers/design-documents/gpu-accelerated-compositing-in-chrome)
