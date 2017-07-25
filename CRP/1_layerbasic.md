@@ -41,8 +41,8 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
         <th>优势</th>
     </tr>
     <tr>
-        <td><img src="./img/vsleft1.png" width="150px"/></td>
-        <td><img src="./img/vsleft2.png" width="150px"/></td>
+        <td><img src="./img/vsleft1.png"/></td>
+        <td><img src="./img/vsleft2.png"/></td>
         <td>没有Paint</td>
     </tr>
     <tr>
