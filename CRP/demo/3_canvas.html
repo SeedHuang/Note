@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+        <style>
+                body {
+                        background: #dddddd;
+                }
+
+                canvas {
+                        margin: 10px;
+                        padding: 10px;
+                        background: #ffffff;
+                        border: thin inset #aaaaaa;
+                        width: 300px;
+                        height: 200px;
+                }
+        </style>
+</head>
+
+<body>
+        <!--不设置width，height是不会出现GraphicsLayer的-->
+        <canvas id="mycanvs" width="600px"></canvas>
+        <script>
+                var canvas = document.getElementById('mycanvs'),
+                        context = canvas.getContext('2d');
+
+                context.font = '38pt Arial';
+                context.fillStyle = 'cornflowerblue';
+                context.strokeStyle = 'blue';
+                //不执行下去不会出现GraphicsLayer
+                context.fillText("Hello Canvas", canvas.width / 2 - 150,
+                        canvas.height / 2 + 15);
+
+                context.strokeText("Hello Canvas", canvas.width / 2 - 150,
+                        canvas.height / 2 + 15);
+        </script>
+</body>
+
+</html>

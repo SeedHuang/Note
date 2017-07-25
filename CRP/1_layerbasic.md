@@ -10,7 +10,7 @@
 
 ## 从DOM到GraphicsLayer Tree
 这是一个复杂的过程：下图简单的讲述了这个过程。
-<img src="./img/layers.png?t=1" style="background:white"/>
+<img src="./img/layers.png?t=2" style="background:white"/>
 
 ## Layer的形成条件
 从上文看见整个形成过程中，只有两种层，一种是`RenderLayer`（负责DOM子树），一种是`GraphicsLayer`（负责RenderLayer子树），对两者形成的条件进行比较
@@ -97,17 +97,16 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
 
 - **Update Layer Tree**：检查是否有`GrapicLayerTree`的结构的更新，每一次用户操作，如：滚动、动画、改变长宽、显示隐藏节点东辉触发`Update Layer Tree`
 
-- **Paint**：需要计算每一个GraphicsLayer中的每一个像素的颜色，并把它打印在一个SKPicture上。
+- **Paint**：需要计算每一个GraphicsLayer中的每一个像素的颜色，并把它打印在一个SKPicture上(就是一张图)。
 
 - **Composite Layers**：将所有的GraphicsLayer进行组合，把它们最后Draw在一张图像。最后光栅化到屏幕上。
 
 > 这里需要注意的是，Composite Layers的过程远远比我们这里说的要复杂，并且涉及到许多GPU操作，这里我们不做过多的深入探讨。
 
 #### Draw vs Paint
-- `Draw`和`Paint`。这两字很容易混淆，首先字面理解，`Paint`对应的彩色的绘画，如油彩画，而draw对应的是显色更简单的铅笔画，如素描。paint你需要知道每一个像素的颜色，而`Draw`并不用知道，只管用规定的颜色化就可以了。这就是为什么`Draw`比`Paint`更快的原因————“不用根据样式条件再去计算每个像素的颜色”。
+`Draw`和`Paint`。这两字很容易混淆，首先字面理解，`Paint`对应的彩色的绘画，如油彩画，而draw对应的是显色更简单的铅笔画，如素描。paint你需要知道每一个像素的颜色，而`Draw`并不用知道，只管用规定的颜色化就可以了。这就是为什么`Draw`比`Paint`更快的原因————“不用根据样式条件再去计算每个像素的颜色”。
 
-
-- 滚动：
+##### 如果说有什么最能体现Draw性能上优越性，做好的例子就是滚动：
 不论是body上的滚动还是，单独容器上的滚动，都会产生两个`GrahpicsLayer`，一个layer适用于存放容器的层，一个layer是用于存放滚动内容的layer。这样做的原因是用来提高滚动时的性能。
 
 <img src="./img/scroll.png" style="max-width:300px"/>
