@@ -51,8 +51,8 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
         <th>优势</th>
     </tr>
     <tr>
-        <td><img src="./img/vsopacity1.png?t=1" width="150px"/></td>
-        <td><img src="./img/vsopacity2.png" width="150px"/></td>
+        <td><img src="./img/vsopacity1.png?t=1"/></td>
+        <td><img src="./img/vsopacity2.png"/></td>
         <td>没有paint</td>
     </tr>
     <tr>
@@ -61,8 +61,8 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
         <th>优势</th>
     </tr>
     <tr>
-        <td><img src="./img/vsopacity1.png" width="150px"/></td>
-        <td><img src="./img/vsopacity2.png" width="150px"/></td>
+        <td><img src="./img/vsopacity1.png"/></td>
+        <td><img src="./img/vsopacity2.png"/></td>
         <td>N/A</td>
     </tr>
     <tr>
@@ -71,8 +71,8 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
         <th>优势</th>
     </tr>
     <tr>
-        <td><img src="./img/vswidth1.png" width="150px"/></td>
-        <td><img src="./img/vswidth2.png" width="150px"/></td>
+        <td><img src="./img/vswidth1.png"/></td>
+        <td><img src="./img/vswidth2.png"/></td>
         <td>N/A</td>
     </tr>
     <tr>
@@ -81,7 +81,7 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
         <th>优势</th>
     </tr>
     <tr>
-        <td><img src="./img/vstransform1.png" width="150px"/></td>
+        <td><img src="./img/vstransform1.png"/></td>
         <td>N/A</td>
         <td>具有`transform3d`属性的`RenderLayer`必定是`GraphicsLayer`，所以没有比较对象，但是可以看出，`transform3d`没有任何`Layout`和`Paint`，这一点上和`GraphisLayer`的`opacity`表现一致，都是最节省资源的方式</td>
     </tr>
