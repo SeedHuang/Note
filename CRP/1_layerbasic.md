@@ -1,4 +1,4 @@
-# 探究层的使用
+# 探究“层”的使用
 
 作者：黄春华
 
@@ -22,7 +22,7 @@ RenderLayer             | GraphicsLayer
 有透明效果的RenderObject | RenderLayer使用了CSS透明效果的动画或者CSS变换的动画。
 节点有overflow,alpha或者反射效果的RenderObject节点 | 使用了Clip或者Reflection属性，并且他饿后代中包含一个合成层。
 使用Canvas2D和3D（WebGL）技术的Renderobject节点 | RenderLayer包含的RenderObject节点表示的使用应加速的Canvas2D或者WebGL技术。
-Video节点对应的`RenderObject`节点 | `RenderLayer`所包含的RenderObject节点表示的是使用硬件加速的视频解码技术的HTML5 video 元素
+video节点对应的`RenderObject`节点 | `RenderLayer`所包含的RenderObject节点表示的是使用硬件加速的视频解码技术的HTML5 video 元素
 N/A    |RenderLayer使用了硬件加速CSS Filters技术
 N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
 
@@ -31,13 +31,19 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
 以上内容摘自《webkit技术内幕》
 
 ## 为什么要有RenderLayer和GraphicsLayer
-可以看的出，`GraphicsLayer`比`RenderLayer`定义的更加严谨，在满足一定条件的情况下`RenderLayer`可以转换成`GraphicsLayer`，为什么要有`RenderLayer`和`GraphicLayer`，本身RenderLayer就可以承载渲染所需要的渲染条件了，但是`GraphicLayer`存在是为更加高效的进行渲染。`GraphicLayer`对应GPU的硬件加速渲染，GPU很擅长处理层的合并，层的合并对应的绘制方式是`draw`，`RenderLayer`渲染方式对应`paint`。这两字很容易混淆，首先字面理解，`paint`对应的彩色的绘画，如油彩画，而draw对应的是显色更简单的铅笔画，如素描。paint你需要知道每一个像素的颜色，而`draw`并不用知道，只管用规定的颜色化就可以了。这就是为什么`draw`比`paint`更快的原因————“不用计算像素的颜色”。
+可以看的出，`GraphicsLayer`比`RenderLayer`定义的更加严谨，在满足一定条件的情况下`RenderLayer`可以转换成`GraphicsLayer`，为什么要有`RenderLayer`和`GraphicsLayer`，本身`RenderLayer`就可以承载渲染所需要的渲染条件了，但是`GraphicsLayer`存在是为更加高效的进行渲染。
+- `GraphicsLayer`在GPU方面有对应的一个存储对象，而`RenderLayer`没有，GPU很擅长对此类数据进行操作。
+- 层的合并对应的绘制方式是`Draw`，`RenderLayer`渲染方式对应`Paint`。这两字很容易混淆，首先字面理解，`Paint`对应的彩色的绘画，如油彩画，而draw对应的是显色更简单的铅笔画，如素描。paint你需要知道每一个像素的颜色，而`Draw`并不用知道，只管用规定的颜色化就可以了。这就是为什么`Draw`比`Paint`更快的原因————“不用根据样式条件再去计算每个像素的颜色”。
+
+在以上两个前提之下，只要`GraphicsLayer`本身内容没有改变，对整个`GraphicsLayer`做`transform`，`opacity`等操作并不会触发`Paint`，因此带来的消耗相对是最少的。
+
+
 - 滚动：
-不论是body上的滚动还是，单独容器上的滚动，都会产生两个`GrahpicsLayer`，一个layer适用于存放容器的层，一个layer是用用于存放滚动内容的layer。这样做的原因是用来提高滚动时的性能。
+不论是body上的滚动还是，单独容器上的滚动，都会产生两个`GrahpicsLayer`，一个layer适用于存放容器的层，一个layer是用于存放滚动内容的layer。这样做的原因是用来提高滚动时的性能。
 
 <img src="./img/scroll.png" style="max-width:300px"/>
 
-通过记录我们发现`scroll`只会产生`Update Layers Tree`和`Composite Layers`的操作
+通过记录我们发现`scroll`只会产生`Update Layers Tree`和`Composite Layers`的操作。
 
 <img src="./img/scrollcompsitelayer.png" width="500px"/>
 
@@ -49,10 +55,10 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
 ### 同一平面上的层
 <img src="./img/plainlayer.png" width="500px" style="background:#fff"/>
 
-`container`是一个桌子，`RenderObject`是桌子上的花纹，而`RenderLayer`是摆在桌子上的牌，都是一个平面上的东西。所以同样都是`z-index`为0，`RenderLayer`有着比普通`RenderObject`更高的显示优先级，因为普通的`RenderObject`是属于`container`这一层的`layer`，也就是最底层。
+`container`是一张桌子，`RenderObject`是桌子上的花纹，而`RenderLayer`是摆在桌子上的牌，都是一个平面上的东西。所以同样都是`z-index`为0，`RenderLayer`有着比普通`RenderObject`更高的显示优先级，因为普通的`RenderObject`是属于`container`这一层的`layer`，也就是最底层。
 
 #### z-index
-那是不是`RenderObject`的显示优先级永远也无法比`RenderLayer`高了呢？不是这样的，之前提到过`z-index:0`的这个概念，对于有position概念的renderLayer,你可以将他的`z-index`设置为-1
+那是不是`RenderObject`的显示优先级永远也无法比`RenderLayer`高了呢？不是这样的，之前提到过`z-index:0`的这个概念，对于有position概念的`RebderLayer`,你可以将他的`z-index`设置为-1
 
 <img src="./img/plainlayer2.png" width="500px" style="background:#fff"/>
 
@@ -60,13 +66,15 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
 
 #### 重叠
 `z-index`对于`RenderLayer`主要影响在于重叠，而重叠的主要后果在于两个：`RenderLayer`的合并以及`RenderLayer`升级为`GraphicsLayer`。
-- renderLayer的合并：对于不同`z-index`的`RenderLayer`是不会产生层与层之间的合并的。合并的话题之后会详细讲述。
-- renderLayer的升级：之前的对照表中详细说明了`RenderLayer`和`GraphicsLayer`的形成原因，其中，如果一个带有`position:relative,absolute`的`RenderLayer`如果覆盖在一个`GraphicsLayer`之上的化，这个`RenderLayer`就会被升级为`GraphicsLayer`，这里要重点说一下“升级”的事情，升级实际上是一个非常花费资源的操作，比如在做动画的时候，从`RenderLayer`升级到`GraphicsLayer`会对动画执行速度产生延时，请看一下例子：
-一下每个绿色的圆形都是一个`position:relative`的`RenderLayer`，红色区域是一个`position:fixed`的`GraphicsLayer`，我们来复习一下：
-- “所有带有位置信息的图层都会成一个`RenderLayer`”，
-- 然后提前介绍一个新知识”当`position`：fixed的元素的容器内容超过容器高度，`position:fixed`的`RenderLayer`会单独形成一个`GraphicsLayer`”
-- `RenderLayer`升级`GraphicsLayer`的策略。
+- `RenderLayer`的合并：对于不同`z-index`的`RenderLayer`是不会产生层与层之间的合并的。合并的话题之后会详细讲述。
+- `RenderLayer`的升级：之前的对照表中详细说明了`RenderLayer`和`GraphicsLayer`的形成原因，其中，如果一个带有`position:relative,absolute`的`RenderLayer`如果覆盖在一个`GraphicsLayer`之上，这个`RenderLayer`就会被升级为`GraphicsLayer`，这里要重点说一下“升级”的事情，升级实际上是一个非常花费资源的操作，比如在做动画的时候，从`RenderLayer`升级到`GraphicsLayer`会对动画执行速度产生延时，请看一下例子：
+以下每个绿色的圆形都是一个`position:relative`的`RenderLayer`，红色区域是一个`position:fixed`的`GraphicsLayer`，这里有一个新知识：
+- 当`position`：fixed的元素的容器内容超过容器高度，`position:fixed`的`RenderLayer`会单独形成一个`GraphicsLayer`
+然后复习一下：
+- 带有位置信息的图层会形成一个`RenderLayer`。
 
+
+#### `RenderLayer`升级`GraphicsLayer`的策略。
 
 <img src="./img/scrollc1.png?t=3" style="background:#fff"/>
 
@@ -112,7 +120,7 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
     </tr>
 </table>
 
-当第一个`.r`完全移出`.fixed`的范围之后，又会出现3次`Paint`，主要主要是因为，原本单独的 `.r`层因为不在`.fixed`之上的范围，所以重新被合入到`#document`之中，而原本的`.r (50 x 150)`有会分离出一个`.r (50 x 50)`和`.r (50 x 100)`两个层,所以一共有3个`GraphicsLayer`的内容产生了改变，所以产生了3次`Paint`:
+当第一个`.r`完全移出`.fixed`的范围之后，又会出现3次`Paint`，主要主要是因为，原本单独的 `.r`层因为不在`.fixed`之上的范围，所以重新被合入到`#document`之中，而原本的`.r (50 x 150)`又会分离出一个`.r (50 x 50)`和`.r (50 x 100)`两个层,所以一共有3个`GraphicsLayer`的内容产生了改变，所以产生了3次`Paint`:
 
 <img src="./img/scrollp2.png" width="500px"/>
 
@@ -147,7 +155,7 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
 
 ## GraphicsLayer的类型
 `position:absolute, relative, fixed, sticky`，`opacity`，`reflection`，`will-change:transform,opacity`，`transform:translateY`
-这些属性如果是单独在页面显示的情况下是不会出现单独的`GraphicsLayer`，触发的效果都是这些属性位于一个GraphicsLayer之上，而`transform`和`scroll`类型都是可以自己单独成层的，并且这些分层的效果不太一样；
+这些属性如果是单独在页面显示的情况下是不会出现单独的`GraphicsLayer`，触发的效果都是这些属性位于一个GraphicsLayer之上，而`transform`和`scroll`类型都是可以自己单独成层的，并且这些分层的效果不太一样；但大体上有两种类型：
 
 ### 合并类型（relative／absoluste／opacity／mask）:
 <img src="./img/clayer1.png" width="500px" style="background:#fff"/>
@@ -169,7 +177,7 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
 
 
 
-> ***will-change*** 是chrome59以上的一个功能，作用是会给一个未来有个能做动画的元素生成一个单独的`GraphicsLayer`，以免在动画开始的时候计算分离出单独的`GraphicsLayer`，这样会产生延迟。
+> ***will-change*** 是chrome59以上的一个功能，作用是会给一个未来有个能做animation/transform/opacity变化的元素生成一个单独的`GraphicsLayer`，以免在动画开始的时候计算分离出单独的`GraphicsLayer`，这样会产生延迟。
 
 ### GraphicsLayer是否越多越好？
 答案是No，Absolutely not，其实大家看到，就浏览器本身实现也分成合并型和独立型两种，其目的就是在于更好的节省资源和更好的性能体验，在dom数量一致的情况下，出现多个`GraphicsLayer`和只有一个`GraphicsLayer`的性能比较：
@@ -217,7 +225,7 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
 每个`Paint`都意味着有一个`GraphicsLayer`产生，否则只会有一个`GraphicsLayer`————`#document`，可以从性能对比中看到，`GraphicsLayer`越多，`Paint`的次数也越多，并且`Composite Layers`的时间也就越长，对于首屏展现来说，是非常不利的。
 
 ## 总结
-了解层的运作原理对于前端有着非常重要意义，通过优化层的覆盖关系，了解层的合并原理，合理使用层可以增加首屏渲染速度以及提示高用户使用过程中的流畅成都，是每一个前端都必须要好好研究的。
+了解层的运作原理对于前端有着非常重要意义，通过优化层的覆盖关系，了解层的合并原理，合理使用层可以增加首屏渲染速度以及提示高用户使用过程中的流畅程度，是每一个前端都必须要好好研究的。
 
 ## 参考
 - 朱永盛《Webkit技术内幕》第7章渲染基础 P164，硬件加速基础 P186
