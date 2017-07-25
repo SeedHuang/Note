@@ -55,7 +55,7 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
         <td><img src="./img/vsopacity2.png" width="150px"/></td>
         <td>没有paint</td>
     </tr>
-    <tr style="font-size:11px">
+    <tr style="font-size:12px">
         <th>GraphicsLayer(opacity/background/transform2d)</th>
         <th>RenderLayer(opacity/background/transform2d)</th>
         <th>优势</th>
