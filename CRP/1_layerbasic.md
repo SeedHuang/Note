@@ -32,10 +32,79 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
 
 ## 为什么要有RenderLayer和GraphicsLayer
 可以看的出，`GraphicsLayer`比`RenderLayer`定义的更加严谨，在满足一定条件的情况下`RenderLayer`可以转换成`GraphicsLayer`，为什么要有`RenderLayer`和`GraphicsLayer`，本身`RenderLayer`就可以承载渲染所需要的渲染条件了，但是`GraphicsLayer`存在是为更加高效的进行渲染。
-- `GraphicsLayer`在GPU方面有对应的一个存储对象，而`RenderLayer`没有，GPU很擅长对此类数据进行操作。
-- 层的合并对应的绘制方式是`Draw`，`RenderLayer`渲染方式对应`Paint`。这两字很容易混淆，首先字面理解，`Paint`对应的彩色的绘画，如油彩画，而draw对应的是显色更简单的铅笔画，如素描。paint你需要知道每一个像素的颜色，而`Draw`并不用知道，只管用规定的颜色化就可以了。这就是为什么`Draw`比`Paint`更快的原因————“不用根据样式条件再去计算每个像素的颜色”。
+- 数量上GraphicsLayer的数量比RenderLayer数量更少，所以Paint的次数会少很多。
+- 图层操的高效，无论是GraphicsLayer还是RenderLayer都会经历一次Paint的过程（GraphicsLayer本身来自于RenderLayer），观察Performance就可以观察到有几个GraphicsLayer就有几次Paint，但是一旦GraphicsLayer形成，只要层内容本身不变，对单个图层进行位置（top,right,bottom,left）变换、透明度或者是3D transform的此类操作的性能就体现出来
+<table>
+    <tr>
+        <th>GraphicsLayer(top/right/bottom/left)</th>
+        <th>RenderLayer(top/right/bottom/left)</th>
+        <th>优势</th>
+    </tr>
+    <tr>
+        <td><img src="./img/vsleft1.png"/></td>
+        <td><img src="./img/vsleft2.png"/></td>
+        <td>没有Paint</td>
+    </tr>
+    <tr>
+        <th>GraphicsLayer(opacity)</th>
+        <th>RenderLayer(opacity)</th>
+        <th>优势</th>
+    </tr>
+    <tr>
+        <td><img src="./img/vsopacity1.png?t=1"/></td>
+        <td><img src="./img/vsopacity2.png"/></td>
+        <td>没有paint</td>
+    </tr>
+    <tr>
+        <th>GraphicsLayer(opacity/background/transform2d)</th>
+        <th>RenderLayer(opacity/background/transform2d)</th>
+        <th>优势</th>
+    </tr>
+    <tr>
+        <td><img src="./img/vsopacity1.png"/></td>
+        <td><img src="./img/vsopacity2.png"/></td>
+        <td>N/A</td>
+    </tr>
+    <tr>
+        <th>GraphicsLayer(width)</th>
+        <th>RenderLayer(width)</th>
+        <th>优势</th>
+    </tr>
+    <tr>
+        <td><img src="./img/vswidth1.png"/></td>
+        <td><img src="./img/vswidth2.png"/></td>
+        <td>N/A</td>
+    </tr>
+    <tr>
+        <th>GraphicsLayer(transform3d)</th>
+        <th>RenderLayer(transform3d)</th>
+        <th>优势</th>
+    </tr>
+    <tr>
+        <td><img src="./img/vstransform1.png"/></td>
+        <td>N/A</td>
+        <td>具有`transform3d`属性的`RenderLayer`必定是`GraphicsLayer`，所以没有比较对象，但是可以看出，`transform3d`没有任何`Layout`和`Paint`，这一点上和`GraphisLayer`的`opacity`表现一致，都是最节省资源的方式</td>
+    </tr>
+</table>
 
-在以上两个前提之下，只要`GraphicsLayer`本身内容没有改变，对整个`GraphicsLayer`做`transform`，`opacity`等操作并不会触发`Paint`，因此带来的消耗相对是最少的。
+从上述场景进行对比，可以看到，GraphicsLayer来进行transform和opacity非常节省资源，主要的差别在于Layout与Paint
+
+#### 简述渲染的4个过程
+- **Recalculate Style**: 此阶段用以与CSSDOM结合计算所有可见节点的样式信息。
+> 事件与 DOM 解析不同，该时间线不显示单独的`Parse CSS`条目，而是在这一个事件下一同捕获解析和`CSSOM`树构建，以及计算的样式的递归计算。[参考:Constructing the Object Model](https://developers.google.cn/web/fundamentals/performance/critical-rendering-path/constructing-the-object-model?hl=zh-cn)
+
+- **Layout**：计算可见节点在设备`viewport`的确切位置和大小，这个就是layout的任务[参考:Render-Tree Construction, Layout, and Paint](https://developers.google.cn/web/fundamentals/performance/critical-rendering-path/render-tree-construction?hl=zh-cn)
+
+- **Update Layer Tree**：检查是否有`GrapicLayerTree`的结构的更新，每一次用户操作，如：滚动、动画、改变长宽、显示隐藏节点东辉触发`Update Layer Tree`
+
+- **Paint**：需要计算每一个GraphicsLayer中的每一个像素的颜色，并把它打印在一个SKPicture上。
+
+- **Composite Layers**：将所有的GraphicsLayer进行组合，把它们最后Draw在一张图像。最后光栅化到屏幕上。
+
+> 这里需要注意的是，Composite Layers的过程远远比我们这里说的要复杂，并且涉及到许多GPU操作，这里我们不做过多的深入探讨。
+
+#### Draw vs Paint
+- `Draw`和`Paint`。这两字很容易混淆，首先字面理解，`Paint`对应的彩色的绘画，如油彩画，而draw对应的是显色更简单的铅笔画，如素描。paint你需要知道每一个像素的颜色，而`Draw`并不用知道，只管用规定的颜色化就可以了。这就是为什么`Draw`比`Paint`更快的原因————“不用根据样式条件再去计算每个像素的颜色”。
 
 
 - 滚动：
@@ -78,7 +147,7 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
 
 <img src="./img/scrollc1.png?t=3" style="background:#fff"/>
 
-上图中第一个图层3D模型中可以看到一共有4个GraphicsLayer
+上图中第一个图层3D模型中可以看到一共有4个`GraphicsLayer`
 
 ```
 #document(292 x 2100)
@@ -155,7 +224,7 @@ N/A     |RenderLayer具有CSS 3D属性或者CSS透视效果
 
 ## GraphicsLayer的类型
 `position:absolute, relative, fixed, sticky`，`opacity`，`reflection`，`will-change:transform,opacity`，`transform:translateY`
-这些属性如果是单独在页面显示的情况下是不会出现单独的`GraphicsLayer`，触发的效果都是这些属性位于一个GraphicsLayer之上，而`transform`和`scroll`类型都是可以自己单独成层的，并且这些分层的效果不太一样；但大体上有两种类型：
+这些属性如果是单独在页面显示的情况下是不会出现单独的`GraphicsLayer`，触发的效果都是这些属性位于一个`GraphicsLayer`之上，而`transform`和`scroll`类型都是可以自己单独成层的，并且这些分层的效果不太一样；但大体上有两种类型：
 
 ### 合并类型（relative／absoluste／opacity／mask）:
 <img src="./img/clayer1.png" width="500px" style="background:#fff"/>
