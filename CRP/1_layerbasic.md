@@ -19,7 +19,7 @@ RenderLayer             | GraphicsLayer
 ------------------------|----------------------
 页面元素的根目录           | #document
 `RenderObject`具有`position` 样式属性的。         | `RenderLayer`覆盖在一个同级`GraphicsLayer`之上，`RenderLayer`的`z-index`大于`GraphicsLayer`。
-`RenderObject`有透明效果 | 使用CSS动画、`opacity`<1
+`RenderObject`有透明效果 | `RenderLayer`使用CSS动画、`opacity`<1
 `RenderObject`具有overflow,alpha或者反射效果的节点 | `RenderLayer`具有`Reflection`样式属性。
 `RenderObject`使用Canvas2D和3D（WebGL）技术的`RenderObject`节点 | `RenderLayer`为`canvas`，并满足三个条件
 `RenderObject`是`video`节点 | `RenderLayer`是video并有一个有效源
