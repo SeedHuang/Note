@@ -111,7 +111,7 @@ RenderLayer             | GraphicsLayer
 ##### 如果说有什么最能体现Draw性能上优越性，最好的例子就是滚动：
 `body`的滚动与`DOM`节点内的滚动（如一个`div`的内容溢出产生滚动）稍有不同，`DOM`节点上的滚动，都会产生两个`GrahpicsLayer`，一个用于存放容器的层，一个用于存放滚动内容。`body`滚动只会产生一个`GraphicsLayer`，但是不论是`body`上的滚动还是`DOM`节点上的滚动，结果是一致的：
 
-<img src="./img/scroll.png" style="width:400px"/>
+<img src="./img/scroll.png" width="400px"/>
 
 通过performance记录我们发现`scroll`的动作只会产生`Update Layers Tree`和`Composite Layers`的操作。这两个
 
