@@ -144,7 +144,7 @@ RenderLayer             | GraphicsLayer
 
 #### `RenderLayer`升级`GraphicsLayer`的策略。
 
-<img src="./img/scrollc1.png?t=4" style="background:#fff" width="500px"/>
+<img src="./img/scrollc1.png?t=5" style="background:#fff" width="500px"/>
 
 上图中第一个图层3D模型中可以看到一共有4个`GraphicsLayer`
 
