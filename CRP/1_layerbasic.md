@@ -26,14 +26,14 @@ RenderLayer             | GraphicsLayer
 `RenderObject`具`有css filter` 样式属性    |`RenderLayer`使用了硬件加速CSS Filters技术
 `RenderObject`具有`transform` 样式属性     |`RenderLayer`具有CSS 3D属性
 
-> opacity:1 是不能提升成为`GraphicsLayer`的
+> `opacity:1` 是不能提升成为`GraphicsLayer`的
 
-以上内容摘自《webkit技术内幕》
+> fixed元素本身并不会产生单独的`GraphicsLayer`，当`body`的内容产生溢出可以滚动的时，或者它覆盖在一个`GraphcisLayer`之上时，才会成为`GraphicsLayer`
 
 ## 为什么要有RenderLayer和GraphicsLayer
 可以看的出，`GraphicsLayer`比`RenderLayer`定义的更加严谨，在满足一定条件的情况下`RenderLayer`可以转换成`GraphicsLayer`，为什么要有`RenderLayer`和`GraphicsLayer`，本身`RenderLayer`就可以承载渲染所需要的渲染条件了，但是`GraphicsLayer`存在是为更加高效的进行渲染。
-- 数量上`GraphicsLayer`的数量比`RenderLayer`数量更少，所以Paint的次数会少很多。
-- 图层操的高效，无论是`GraphicsLayer`还是`RenderLayer`都会经历一次Paint的过程（`GraphicsLayer`本身来自于RenderLayer），观察`Performance`就可以观察到有几个`GraphicsLayer`就有几次`Paint`，但是一旦`GraphicsLayer`形成，只要层内容本身不变，对单个图层进行位置（top,right,bottom,left）变换、透明度或者是3D transform的此类操作的性能就体现出来
+- 数量上`GraphicsLayer`的数量比`RenderLayer`数量更少，在进行一些页面元素的复杂操作时，需要尽可能少的触发`Paint`但又不能在`#document`上触发一个`Paint`。所以对`RenderLayer`在进行合理分组得到的`GraphicsLayer`显然更符合需求。
+- 图层操的高效，无论是`GraphicsLayer`还是`RenderLayer`都会经历一次`Paint`的过程（`GraphicsLayer`本身来自于RenderLayer），观察`Performance`就可以观察到有几个`GraphicsLayer`就有几次`Paint`，但是一旦`GraphicsLayer`形成，只要层内容本身不变，对单个图层进行位置（top,right,bottom,left）变换、透明度或者是3D transform的此类操作的性能就体现出来
 <table>
     <tr>
         <th>GraphicsLayer(top/right/bottom/left)</th>
@@ -89,6 +89,8 @@ RenderLayer             | GraphicsLayer
 
 从上述场景进行对比，可以看到，GraphicsLayer来进行transform和opacity非常节省资源，主要的差别在于Layout与Paint
 
+> GPU是专门处理图像的，对于GPU来说合并图像比重绘图像要高效的多
+
 #### 简述渲染的4个过程
 - **Recalculate Style**: 此阶段用以与CSSDOM结合计算所有可见节点的样式信息。
 > 事件与 DOM 解析不同，该时间线不显示单独的`Parse CSS`条目，而是在这一个事件下一同捕获解析和`CSSOM`树构建，以及计算的样式的递归计算。[参考:Constructing the Object Model](https://developers.google.cn/web/fundamentals/performance/critical-rendering-path/constructing-the-object-model?hl=zh-cn)
@@ -99,16 +101,16 @@ RenderLayer             | GraphicsLayer
 
 - **Paint**：需要计算每一个`GraphicsLayer`中的每一个像素的颜色，并把它打印在一个SKPicture上(就是一张图)。
 
-- **Composite Layers**：将所有的`GraphicsLayer`进行组合，把它们最后`Draw`在一张图像。最后光栅化到屏幕上。与`Update Layer Tree`一样，每次有操作都会触发`Composite Layers`
+- **Composite Layers**：将所有的`GraphicsLayer`进行组合，把它们最后`Draw`在一张图像上。最后光栅化到屏幕上。与`Update Layer Tree`一样，每次有操作都会触发`Composite Layers`
 
 > 这里需要注意的是，Composite Layers的过程远远比我们这里说的要复杂，并且涉及到许多GPU操作，这里我们不做过多的深入探讨。
 
 #### Draw vs Paint
 `Draw`和`Paint`。这两字很容易混淆，首先字面理解，`Paint`对应的彩色的绘画，如油彩画，而draw对应的是显色更简单的铅笔画，如素描。paint你需要知道每一个像素的颜色，而`Draw`并不用知道，只管用规定的颜色化就可以了。这就是为什么`Draw`比`Paint`更快的原因————“不用根据样式条件再去计算每个像素的颜色”。
 
-##### 如果说有什么最能体现Draw性能上优越性，做好的例子就是滚动：
+##### 如果说有什么最能体现Draw性能上优越性，最好的例子就是滚动：
 `body`的滚动与`DOM`节点内的滚动（如一个`div`的内容溢出产生滚动）稍有不同，`DOM`节点上的滚动，都会产生两个`GrahpicsLayer`，一个用于存放容器的层，一个用于存放滚动内容。`body`滚动只会产生一个`GraphicsLayer`，但是不论是`body`上的滚动还是`DOM`节点上的滚动，结果是一致的：
-<img src="./img/scroll.png" style="max-width:300px"/>
+<img src="./img/scroll.png" style="width:400px"/>
 
 通过performance记录我们发现`scroll`的动作只会产生`Update Layers Tree`和`Composite Layers`的操作。这两个
 
@@ -133,17 +135,11 @@ RenderLayer             | GraphicsLayer
 
 台子的花纹全都到上面来了，相当于放到了台板的背面。但是非`position`类型的`RenderLayer`是无法做到这一点的。
 
-#### 重叠
-`z-index`对于`RenderLayer`主要影响在于重叠，而重叠的主要后果在于两个：`RenderLayer`的合并以及`RenderLayer`升级为`GraphicsLayer`。
-- `RenderLayer`的合并：对于不同`z-index`的`RenderLayer`是不会产生层与层之间的合并的。合并的话题之后会详细讲述。
-- `RenderLayer`的升级：之前的对照表中详细说明了`RenderLayer`和`GraphicsLayer`的形成原因，其中，如果一个带有`position:relative,absolute`的`RenderLayer`如果覆盖在一个`GraphicsLayer`之上，这个`RenderLayer`就会被升级为`GraphicsLayer`，这里要重点说一下“升级”的事情，升级实际上是一个非常花费资源的操作，比如在做动画的时候，从`RenderLayer`升级到`GraphicsLayer`会对动画执行速度产生延时，请看一下例子：
-以下每个绿色的圆形都是一个`position:relative`的`RenderLayer`，红色区域是一个`position:fixed`的`GraphicsLayer`，这里有一个原理需要大家掌握：
-- 当`position`：fixed的元素的容器内容超过容器高度，`position:fixed`的`RenderLayer`会单独形成一个`GraphicsLayer`
-然后复习一下：
-- 带有位置信息的图层会形成一个`RenderLayer`。
-
-
+### 重叠
+`z-index`对于`RenderLayer`主要影响在于重叠，而重叠的主要后果在于两个：`RenderLayer`的合并以及升级。
 #### `RenderLayer`升级`GraphicsLayer`的策略。
+之前的对照表中详细说明了`RenderLayer`和`GraphicsLayer`的形成原因，其中，如果一个带有`position:relative,absolute`的`RenderLayer`如果覆盖在一个`GraphicsLayer`之上，这个`RenderLayer`就会被升级为`GraphicsLayer`，升级实际上是一个非常花费资源的操作，比如在做动画的时候，从`RenderLayer`升级到`GraphicsLayer`会对动画执行速度产生延时，请看例子：
+以下每个绿色的圆形都是一个`position:relative`的`RenderLayer`，红色区域是一个`position:fixed`的`GraphicsLayer`
 
 <img src="./img/scrollc1.png?t=5" style="background:#fff" width="500px"/>
 
@@ -217,16 +213,16 @@ RenderLayer             | GraphicsLayer
 
 <img src="./img/scrollp3.png"/>
 
-#### 何解决这个问题？
+##### 何解决这个问题？
 答案非常简单，可以将`.fixed`的node节点置于`.r`之后，或者直接提升或'.fixed'的`z-index`属性，两个方案的实质上都是提升了`z-index`；只要让覆盖在一个`GraphicsLayer`之上的条件失效就可以了。
 
 
+#### GraphicsLayer的合并与独立
+并不是每一个GraphicsLayer都是独立的，为了减少多次`Paint`所带来的消耗`GraphicsLayer`之间也会有合并。
 
-## GraphicsLayer的类型
-`position:absolute, relative, fixed, sticky`，`opacity`，`reflection`，`will-change:transform,opacity`，`transform:translateY`
-这些属性如果是单独在页面显示的情况下是不会出现单独的`GraphicsLayer`，触发的效果都是这些属性位于一个`GraphicsLayer`之上，而`transform`和`scroll`类型都是可以自己单独成层的，并且这些分层的效果不太一样；但大体上有两种类型：
+> 以下所提到的合并和独立类型并不完整，欢迎大家补充。
 
-### 合并类型（relative／absoluste／opacity／mask）:
+##### 合并类型（relative／absoluste／opacity／mask／transform2d）:
 <img src="./img/clayer1.png" width="500px" style="background:#fff"/>
 
 第一个会单独形成一个`GraphicsLayer`，其余同种类型会合成一个`GraphicsLayer`。
@@ -236,7 +232,7 @@ RenderLayer             | GraphicsLayer
 <img src="./img/clayer2.png?t=1" width="500px" style="background:#fff"/>
 
 
-### 独立型（各自为营）型 `fixed`／`transform`／`animation`／`relection`／`will-change:transform,opacity`/`overflow:scroll`／`canvas`／`video`:
+##### 独立型（各自为营）型 `fixed`／`transform`／`animation`／`relection`／`will-change:transform,opacity`/`overflow:scroll`／`canvas`／`video`:
 
 <img src="./img/squash2.png"  width="500px"/>
 
