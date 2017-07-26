@@ -93,13 +93,13 @@ RenderLayer             | GraphicsLayer
 - **Recalculate Style**: 此阶段用以与CSSDOM结合计算所有可见节点的样式信息。
 > 事件与 DOM 解析不同，该时间线不显示单独的`Parse CSS`条目，而是在这一个事件下一同捕获解析和`CSSOM`树构建，以及计算的样式的递归计算。[参考:Constructing the Object Model](https://developers.google.cn/web/fundamentals/performance/critical-rendering-path/constructing-the-object-model?hl=zh-cn)
 
-- **Layout**：计算可见节点在设备`viewport`的确切位置和大小，这个就是layout的任务[参考:Render-Tree Construction, Layout, and Paint](https://developers.google.cn/web/fundamentals/performance/critical-rendering-path/render-tree-construction?hl=zh-cn)
+- **Layout**：计算可见节点在设备`viewport`的确切位置和大小，这个就是layout的任务[参考:Render-Tree Construction, Layout, and Paint](https://developers.google.cn/web/fundamentals/performance/critical-rendering-path/render-tree-construction?hl=zh-cn)。
 
-- **Update Layer Tree**：检查是否有`GrapicLayerTree`的结构的更新，每一次用户操作，如：滚动、动画、改变长宽、显示隐藏节点东辉触发`Update Layer Tree`
+- **Update Layer Tree**：检查以及更新`GrapicLayerTree`的结构的，每一次用户操作，如：滚动、动画、改变长宽、显示隐藏节点都会触发`Update Layer Tree`。
 
-- **Paint**：需要计算每一个GraphicsLayer中的每一个像素的颜色，并把它打印在一个SKPicture上(就是一张图)。
+- **Paint**：需要计算每一个`GraphicsLayer`中的每一个像素的颜色，并把它打印在一个SKPicture上(就是一张图)。
 
-- **Composite Layers**：将所有的GraphicsLayer进行组合，把它们最后Draw在一张图像。最后光栅化到屏幕上。
+- **Composite Layers**：将所有的`GraphicsLayer`进行组合，把它们最后`Draw`在一张图像。最后光栅化到屏幕上。与`Update Layer Tree`一样，每次有操作都会触发`Composite Layers`
 
 > 这里需要注意的是，Composite Layers的过程远远比我们这里说的要复杂，并且涉及到许多GPU操作，这里我们不做过多的深入探讨。
 
@@ -107,15 +107,16 @@ RenderLayer             | GraphicsLayer
 `Draw`和`Paint`。这两字很容易混淆，首先字面理解，`Paint`对应的彩色的绘画，如油彩画，而draw对应的是显色更简单的铅笔画，如素描。paint你需要知道每一个像素的颜色，而`Draw`并不用知道，只管用规定的颜色化就可以了。这就是为什么`Draw`比`Paint`更快的原因————“不用根据样式条件再去计算每个像素的颜色”。
 
 ##### 如果说有什么最能体现Draw性能上优越性，做好的例子就是滚动：
-不论是body上的滚动还是，单独容器上的滚动，都会产生两个`GrahpicsLayer`，一个layer适用于存放容器的层，一个layer是用于存放滚动内容的layer。这样做的原因是用来提高滚动时的性能。
-
+`body`的滚动与`DOM`节点内的滚动（如一个`div`的内容溢出产生滚动）稍有不同，`DOM`节点上的滚动，都会产生两个`GrahpicsLayer`，一个用于存放容器的层，一个用于存放滚动内容。`body`滚动只会产生一个`GraphicsLayer`，但是不论是`body`上的滚动还是`DOM`节点上的滚动，结果是一致的：
 <img src="./img/scroll.png" style="max-width:300px"/>
 
-通过记录我们发现`scroll`只会产生`Update Layers Tree`和`Composite Layers`的操作。
+通过performance记录我们发现`scroll`的动作只会产生`Update Layers Tree`和`Composite Layers`的操作。这两个
 
 <img src="./img/scrollcompsitelayer.png" width="500px"/>
 
 在滚动的过程中没有产生任何`Paint`，只有`Update Layer Tree`和`Composite Layers`,所以极大的提高了性能。
+
+> 许多浏览器会在body滚动上进行优化，所以并不用担心其性能，几乎所有的浏览器，body滚动性能都比DOM节点上的滚动表现更好
 
 > 所以本着好到用在刀刃上的原则，`GraphicsLayer`会用本身内容偏向稳定，而使用场景偏复杂的一些场景上。
 
@@ -136,7 +137,7 @@ RenderLayer             | GraphicsLayer
 `z-index`对于`RenderLayer`主要影响在于重叠，而重叠的主要后果在于两个：`RenderLayer`的合并以及`RenderLayer`升级为`GraphicsLayer`。
 - `RenderLayer`的合并：对于不同`z-index`的`RenderLayer`是不会产生层与层之间的合并的。合并的话题之后会详细讲述。
 - `RenderLayer`的升级：之前的对照表中详细说明了`RenderLayer`和`GraphicsLayer`的形成原因，其中，如果一个带有`position:relative,absolute`的`RenderLayer`如果覆盖在一个`GraphicsLayer`之上，这个`RenderLayer`就会被升级为`GraphicsLayer`，这里要重点说一下“升级”的事情，升级实际上是一个非常花费资源的操作，比如在做动画的时候，从`RenderLayer`升级到`GraphicsLayer`会对动画执行速度产生延时，请看一下例子：
-以下每个绿色的圆形都是一个`position:relative`的`RenderLayer`，红色区域是一个`position:fixed`的`GraphicsLayer`，这里有一个新知识：
+以下每个绿色的圆形都是一个`position:relative`的`RenderLayer`，红色区域是一个`position:fixed`的`GraphicsLayer`，这里有一个原理需要大家掌握：
 - 当`position`：fixed的元素的容器内容超过容器高度，`position:fixed`的`RenderLayer`会单独形成一个`GraphicsLayer`
 然后复习一下：
 - 带有位置信息的图层会形成一个`RenderLayer`。
@@ -235,11 +236,11 @@ RenderLayer             | GraphicsLayer
 <img src="./img/clayer2.png?t=1" width="500px" style="background:#fff"/>
 
 
-### 独立型（各自为营）型 `fixed`／`transform`／`animation`／`relection`／`will-change:transform,opacity`/`overflow:scroll`:
+### 独立型（各自为营）型 `fixed`／`transform`／`animation`／`relection`／`will-change:transform,opacity`/`overflow:scroll`／`canvas`／`video`:
 
 <img src="./img/squash2.png"  width="500px"/>
 
-`scroll`与其他的独立层方式不同，一旦有`scroll`，会产生两个独立层;
+`scroll`与其他的独立层方式不同，内容移出产生滚动，会产生两个独立层;
 
 <img src="./img/scrolllayer.png" width="500px"/>
 
