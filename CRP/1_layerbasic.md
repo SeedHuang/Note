@@ -30,6 +30,8 @@ RenderLayer             | GraphicsLayer
 
 > fixed元素本身并不会产生单独的`GraphicsLayer`，当`body`的内容产生溢出可以滚动的时，或者它覆盖在一个`GraphcisLayer`之上时，才会成为`GraphicsLayer`
 
+> 更加详细形成`GraphicsLayer`的原因请参考source code[CompositingReasons.cpp](https://chromium.googlesource.com/chromium/src/+/master/third_party/WebKit/Source/platform/graphics/CompositingReasons.cpp)
+
 ## 为什么要有RenderLayer和GraphicsLayer
 可以看的出，`GraphicsLayer`比`RenderLayer`定义的更加严谨，在满足一定条件的情况下`RenderLayer`可以转换成`GraphicsLayer`，为什么要有`RenderLayer`和`GraphicsLayer`，本身`RenderLayer`就可以承载渲染所需要的渲染条件了，但是`GraphicsLayer`存在是为更加高效的进行渲染。
 - 数量上`GraphicsLayer`的数量比`RenderLayer`数量更少，在进行一些页面元素的复杂操作时，需要尽可能少的触发`Paint`但又不能在`#document`上触发一个`Paint`。所以对`RenderLayer`在进行合理分组得到的`GraphicsLayer`显然更符合需求。
@@ -218,7 +220,7 @@ RenderLayer             | GraphicsLayer
 答案非常简单，可以将`.fixed`的node节点置于`.r`之后，或者直接提升或'.fixed'的`z-index`属性，两个方案的实质上都是提升了`z-index`；只要让覆盖在一个`GraphicsLayer`之上的条件失效就可以了。
 
 
-#### GraphicsLayer的合并与独立
+#### GraphicsLayer的(Squashing)合并与(SquashingDisallowed)独立
 并不是每一个GraphicsLayer都是独立的，为了减少多次`Paint`所带来的消耗`GraphicsLayer`之间也会有合并。
 
 > 以下所提到的合并和独立类型并不完整，欢迎大家补充。
@@ -241,6 +243,7 @@ RenderLayer             | GraphicsLayer
 
 <img src="./img/scrolllayer.png" width="500px"/>
 
+> chrome source关于squashDisallowed的更为详细的解释[原文:SquashingDisallowedReasons.cpp](https://chromium.googlesource.com/chromium/src/+/master/third_party/WebKit/Source/platform/graphics/SquashingDisallowedReasons.cpp)
 
 
 > ***will-change*** 是chrome59以上的一个功能，作用是会给一个未来有个能做animation/transform/opacity变化的元素生成一个单独的`GraphicsLayer`，以免在动画开始的时候计算分离出单独的`GraphicsLayer`，这样会产生延迟。
@@ -299,3 +302,4 @@ RenderLayer             | GraphicsLayer
 - [Ilya Grigorik 《渲染树构建、布局及绘制》](https://developers.google.cn/web/fundamentals/performance/critical-rendering-path/render-tree-construction?hl=zh-cn)
 - [Tom Wiltzius, Vangelis Kokkevis & the Chrome Graphics team《GPU Accelerated Compositing in Chrome
 》](http://www.chromium.org/developers/design-documents/gpu-accelerated-compositing-in-chrome)
+- [SquashingDisallowedReasons.cpp](https://chromium.googlesource.com/chromium/src/+/master/third_party/WebKit/Source/platform/graphics/SquashingDisallowedReasons.cpp)

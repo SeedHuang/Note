@@ -1,0 +1,71 @@
+<html>
+
+<head>
+        <style>
+                html,
+                body {
+                        padding: 0;
+                        margin: 0;
+                        height: 100%;
+                }
+
+                body {
+                        overflow: scroll;
+                }
+
+                
+
+                .r {
+
+                        height: 50px;
+                        border-radius: 25px;
+                        background: green;
+                }
+                .card {
+                    height:50px;
+                    width:50px;
+                    background:red;
+                    overflow:hidden;
+                    position:relative;
+                    box-sizing: border-box;
+                    overflow: hidden;
+                }
+
+                .transform1 {
+                    height: 3.5rem;
+                    box-sizing: border-box;
+                    text-align: center;
+                    position: relative;
+                }
+
+        </style>
+        <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no,minimal-ui">
+</head>
+
+<body>
+        <div class="notsubsequentlayer">
+            I'm not subsequent layer
+        </div>
+        <div class="container">
+            <div class="container">
+                <div class="r" style="transform:translate3d(0,0,0)">
+                    Has an inline transform, which causes subsequent layers to assume "
+     "overlap
+                </div>
+            </div>
+            <div class="card">
+                <div class="transform1">aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa</div>
+            </div>
+            <div class="card">
+                <div class="transform1">aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa</div>
+            </div>
+            <div class="card">
+                <div class="transform1">aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa</div>
+            </div>
+            <div class="card">
+                <div class="transform1">aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa aaa</div>
+            </div>
+        </div>
+</body>
+
+</html>
