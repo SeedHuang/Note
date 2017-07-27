@@ -58,13 +58,13 @@ RenderLayer             | GraphicsLayer
         <td>没有paint</td>
     </tr>
     <tr>
-        <th>GraphicsLayer</br>(opacity/background/transform2d)</th>
-        <th>RenderLayer</br>(opacity/background/transform2d)</th>
+        <th>GraphicsLayer</br>(background/transform2d)</th>
+        <th>RenderLayer</br>(background/transform2d)</th>
         <th>优势</th>
     </tr>
     <tr>
-        <td><img src="./img/vsopacity1.png"/></td>
-        <td><img src="./img/vsopacity2.png"/></td>
+        <td><img src="./img/vsscroll1.png"/></td>
+        <td><img src="./img/vsscroll2.png"/></td>
         <td>N/A</td>
     </tr>
     <tr>
