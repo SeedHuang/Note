@@ -9,7 +9,7 @@
     "author": "Seed Huang",
     "license": "ISC",
     "dependencies": {
-        "chrome-launcher": "^0.3.0",
+        "chrome-launcher": "^0.13.2",
         "chrome-remote-interface": "^0.23.3"
     }
 }
