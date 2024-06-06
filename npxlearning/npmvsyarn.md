@@ -80,4 +80,54 @@ edunpm - Fetch Error
 
 这里先得介绍一下 package-lock.json
 
-package-lock.json
+package-lock.json诞生的目的就是为了防止出现我们上述的情况。同一个package.json却产生了不同的运行结果。package-lock.json在npm5时添加进来，所以如果你使用5以上的版本，除非你手动禁用掉它。
+
+所以从此以后npm会根据package-lock.json里的内容来处理和安装依赖而不是根据package.json。因为package-lock.json个每个以来表明了版本，获取地址和哈希值，是的每次安装都会出现相同的结果。不管你在什么机器上面或什么时候安装的。
+
+#### 官方定义
+
+> package-lock.json is automatically generated for any operations where npm modifies either the node_modules tree, or package.json. It describes the exact tree that was generated, such that subsequent install are able to generate identical trees, regardless of intermediate dependency update. This file is intended to committed into source repositories, and serves various purposes.
+
+因此，解决方案
+
+```
+
+$ rm -rf node_modules
+
+$ rm package-lock.json
+
+$ npm i
+// npm-check 检查更新
+
+$ npm install -g npm-check
+
+$ npm-check
+
+$ npm-check -u
+
+? Choose which packages to update. (Press <space> to select)
+
+Updatge package.json to match version installed
+> chalk ^1.1.3    >   2.4.2    https://github.com/chalk/chalk#readme
+> cheerio ^0.22.0  >  0.22.0    https://github.com/cheeriojs/cheerio#readme
+
+  Space to select. Enter to start upgrading. control-C to cancel
+
+// npm-upgrade更新
+$ npm install -g npm-upgrade
+
+$ npm-upgrade
+
+// 更新全局包
+$ npm update <name> -g
+
+// 更新生产环境依赖包
+$ npm update <name> --save
+
+// 更新开发环境依赖包
+$ npm update <name> --save-dev
+
+// 升级package-lock.json里面的库包
+$ npm install XXX@x.x.x
+
+```
