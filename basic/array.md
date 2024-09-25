@@ -2,7 +2,6 @@
 
 > array说实话，很多方法都很实用，但是我用的最多的forEach，map，push，其他的用的少，为了让我以后可以继续记得这个方法怎么使用而不是每次都去找网上文章，让我每次的记忆在一个电商，我认为还是很有必要记录一下的
 
-
 ## push
 
 解释：push就是吧一个象推到一个数组的最后一个
@@ -58,7 +57,40 @@ console.log(a);
 
 # some
 
+some对应的是every，即，如果有一个项满足条件，则，立即停止循环，some返回true
+
+```javascript
+var a = [1,2,3,4,5];
+console.log(a.some(function(item, index){
+  console.log(index);
+  if(item === 1) {
+    return true;
+  } else {
+    return false;
+  }
+}));
+// console.log(0)
+// console.log(true)
+
+```
+
 ## find
+
+find是在一个数组中找到第一个满足条件的，并返回该对象，不是数组;
+
+```javascript
+console.log(a.some(function(item, index){
+console.log(index);
+if(item === 1) {
+return true;
+} else {
+return false;
+}
+}));
+// console.log(0)
+// console.log(true)javascript
+
+```
 
 ## filter
 
