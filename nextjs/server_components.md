@@ -22,7 +22,7 @@ Next.js默认使用服务端组件无需任何配置，同时，你也可以根�
 
 ## 服务端组件是如何渲染的？
 
-# 在服务器上
+### 在服务器上
 
 Next.js使用React的API来编排渲染，渲染的工作通过独立的路由块(Route Segments)和[Suspense](https://react.dev/reference/react/Suspense)被分成小块，每个小块通过以下两步被渲染：
 
