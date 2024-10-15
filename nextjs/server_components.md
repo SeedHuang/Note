@@ -87,13 +87,32 @@ Next.js使用React的API来编排渲染，渲染的工作通过独立的路由�
 
 在渲染过程中，如果一个动态功能（dynamic function）或者未缓存的数据请求（uncached data request）被发现了，Next.js会切换到动态渲染，来渲染该路由。以下表格统计了动态功能和数据缓存是如何影响一个路由是静态还是动态渲染的：
 
+
 | Dynamic Functions（动态功能） | Data（数据） | 路由（Route） |
 | ----------------------------- | ------------ | ------------- |
 | No                            | Cached       | 静态渲染      |
 | Yes                           | Cached       | 动态渲染      |
-| No                            | Cached       | 动态渲染 ｜   |
+| No                            | Cached       | 动态渲染      |
 | Yes                           | Not Cached   | 动态渲染      |
 
 在上面的表格中，一个路由如果要做成静态的，那么他所有的数据必须被缓存。然后，你可以在动态渲染的时候同时使用缓存或者为缓存的数据；
 
-作为一个开发这，你不必亲自选择静态还是动态的= 二
+作为一个开发者，你不必亲自选择静态还是动态渲染，因为Next.js 会为每个路由依据特征和使用的API自动选择最好的渲染策略；相反，您可以选择何时缓存或重新验证特定数据([cache or reavalidate specific data](https://nextjs.org/docs/app/building-your-application/data-fetching/fetching-caching-and-revalidating))，也可以选择流式([streaming](https://nextjs.org/docs/app/building-your-application/rendering/server-components#streaming))传输UI的部分内容。
+
+### 动态功能(Dynamic Functions)
+
+动态功能(Dynamic Functions)依赖只有请求时才能获取的信息，比如用户的cookie，当前的请求头，或者URL中的参数，在Next.js，这些动态功能有
+
+- `cookies()` 和 `headers()` : 在服务器组件中使用这些function，会将整个路由在请求时进行动态渲染；
+- `searchParams`: 使用[Page](https://nextjs.org/docs/app/api-reference/file-conventions/page)的props上的`searchParams`属性，也会将整个路由在请求时进行动态渲染；
+
+
+### 流式渲染(Streaming)
+
+![1728995488184](images/server_components/1728995488184.png)
+
+流式渲染允许你渐进的从服务器上渲染。当一份工作准备好之后就会将其分成小块并流向客户端。浙江允许用户在看到整个页面渲染完成之前可以立即看到部分页面。
+
+![1728996390500](images/server_components/1728996390500.png)
+
+Next.js的App路由默认支持流式渲染。他不但帮助了首屏页面改善加载性能以及那些因为较慢的请求而阻碍渲染的整个路由的情况。
