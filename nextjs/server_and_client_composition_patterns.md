@@ -84,9 +84,9 @@ export async function getData() {
 
 相应的包客户端只能用于标记包含`client-only`代码的模块，例如访问窗口对象的代码。
 
-### 使用三方包和提供者
+### 使用三方包和Provider
 
-自从服务端组件作为React一个新功能，社区生态的第三发包和提供者开始将"use client"指令添加到那些使用仅客户端可用的功能的组件上，这些功能包括`useState`,`useEffect`,`createContext`等；
+自从服务端组件作为React一个新功能，社区生态的第三发包和Provider开始将"use client"指令添加到那些使用仅客户端可用的功能的组件上，这些功能包括`useState`,`useEffect`,`createContext`等；
 
 但是知道如今，npm中很多只能在客户端上使用的组件依然没有添加这个指令，那些使用了`use client`指令的第三方组件可以如预想的一样在客户端组件上顺利运行，但是他们将不能在服务器组件上运行；
 
@@ -152,6 +152,110 @@ export default function Page() {
       {/*  Works, since Carousel is a Client Component */}
       <Carousel />
     </div>
+  )
+}
+```
+
+我们预计您不需要包装大多数第三方组件，因为您很可能本来就是在客户端场景上，或者在客户端组件中使用它们。然而，Provider是一个例外，因为它们依赖于React状态和上下文，并且通常需要在应用程序的根节点上使用。在下面了解有关第三方上下文（third-party context providers）提供程序的更多信息。
+
+### 使用Context Providers
+
+Context Provider通常在应用程序的根附近呈现，以共享全局关注点，如当前主题。因为React Context在服务端组件中并不支持，所以在你的应用程序中创建一个context会引起错误
+
+```javascript
+// app/theme-provider.tsx
+import { createContext } from 'react'
+ 
+//  createContext is not supported in Server Components
+export const ThemeContext = createContext({})
+ 
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        <ThemeContext.Provider value="dark">{children}</ThemeContext.Provider>
+      </body>
+    </html>
+  )
+}
+```
+
+在一个客户端组件中创建和渲染provider可以解决这个问题
+
+```javascript
+// app/theme-provider.tsx
+'use client'
+ 
+import { createContext } from 'react'
+ 
+export const ThemeContext = createContext({})
+ 
+export default function ThemeProvider({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return <ThemeContext.Provider value="dark">{children}</ThemeContext.Provider>
+}
+```
+
+你的服务端组件将可以直接渲染你的provider当他被标记成一个客户端组件
+
+```javascript
+// app/layout.tsx
+import ThemeProvider from './theme-provider'
+ 
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html>
+      <body>
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
+    </html>
+  )
+}
+```
+
+由于provider在应用程序根部被渲染，所有你应用程序中其他的客户端组件都可以在context中被消费。
+
+> Good to know: 你应该在树中尽可能深的渲染provider，你可能已经注意到了`ThemeProvider`只包含了{children}，而没有包含整个html, 因为这个将使Next.js可以更加简单的优化你服务端组件中的静态部分
+
+
+### 给类库开发者的建议
+
+通常来说，类库开发者创建的用来给其他开发者使用的包可以使用“use client”指令标记其包的客户端入口点。这将允许包的使用者可以之间在他们的服务端组件中导入这些包，而不用做二次包装；
+
+你可以通过在tree的更深处使用"use client"来优化你的包，这个将更多的部分作为服务端组件模块的一部分；
+
+
+## 客户端组件模式 Client Components
+
+### 将客户端组件往树的深层次移动
+
+要减少客户端javascript块的大小，我们推荐将客户端组件往树的深层次移动
+
+比如，你可以有一个静态元素的layout，和一个可以使用状态并且可交互的搜索条的方案，以替换将整个layout都作为一个客户端组件，而只将可以交互的搜索条作为客户端组件，这个可以让你的layout保持作为一个服务端组件，这也为这你不必将layout中所有组件的javascript都发往客户端；
+
+```javascript
+// SearchBar is a Client Component
+import SearchBar from './searchbar'
+// Logo is a Server Component
+import Logo from './logo'
+ 
+// Layout is a Server Component by default
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <nav>
+        <Logo />
+        <SearchBar />
+      </nav>
+      <main>{children}</main>
+    </>
   )
 }
 ```
