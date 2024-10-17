@@ -259,3 +259,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   )
 }
 ```
+
+### 将Props从服务端传给客户端组件（序列化Serialization）
+
+如果你在一个服务端组件中获取数据，你可以将数据通过props下传给客户端组件。服务端传给客户端组件的props需要通过React被序列化（Serialization）。
+
+如果你的客户端组件依赖的数据无法被序列还，你可以[通过使用客户端上的第三方库来获取数据](https://nextjs.org/docs/app/building-your-application/data-fetching/fetching-caching-and-revalidating#fetching-data-on-the-client-with-third-party-libraries)或者通过服务端上的[Route Handler](https://nextjs.org/docs/app/building-your-application/routing/route-handlers)
+
+### 交错服务器和客户端组件（Interleaving Server and Client Components）
+
+在交错客户端和服务器组件时，将UI可视化为组件树可能会有所帮助。以Root layout为起点（这是一个服务端组件）你可以通过在给某些子树下的组件添加"user client"命令来让他们在客户端上渲染；
+
+在那些客户端子树中，你依然可以内嵌服务端组件或者调用服务端action，不过你需要讲一些事情铭记在心：
+
+- 在一个请求-相应的周期中，你的代码就从服务端移动到了客户端；如果此时你在客户端上想访问服务端上的数据或者资源，你就需要向服务端重新发起一个新的请求；
+- 当一个新的请求发送给服务器，所有的服务端组件将会被第一时间渲染，包括那些内嵌在客户端组件中的服务端组件；这个渲染结果（RSC Payload）将会包含客户端组件的地址的应用。然后，在客户端上，React就会使用RSC Payload来重新协调这些服务端组件和客户端组件，讲他们融入进一棵树；
+- <span style="color:red">因为客户端组件是在服务端组件之后渲染的，所以你不能在一个客户端组件中引入一个服务端组件</span>
