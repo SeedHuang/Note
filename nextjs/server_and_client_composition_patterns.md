@@ -333,3 +333,33 @@ export default function ClientComponent({
   )
 }
 ```
+
+`ClientComponent`不知道`children`会最终被一个服务端组件填充。`ClientComponent`仅有的责任就是需要判断`children`要发在哪里
+
+在一个父服务端组件中，你可以同时引入`ClientComponent`和`ServerComponent`并且将一个`ServerComponent`作为一个“child”传递给`ClientComponent`
+
+```javascript
+// app/page.tsx
+
+// This pattern works:
+// You can pass a Server Component as a child or prop of a
+// Client Component.
+import ClientComponent from './client-component'
+import ServerComponent from './server-component'
+ 
+// Pages in Next.js are Server Components by default
+export default function Page() {
+  return (
+    <ClientComponent>
+      <ServerComponent />
+    </ClientComponent>
+  )
+}
+```
+
+通过这个方法`ClientComponent`和`ServerComponent`是分离以及可以被独立渲染。通过这个方法，这个`ServerComponent`型的child可以在在客户端组件在客户端上被渲染之前在服务器上被渲染；
+
+> 最好知道：
+>
+> - “lifting content up（提升内容）”的模式已经被用于避免当一个父组件被重新渲染时其内嵌的组组件也会被重新渲染；
+> - `ServerComponent`的传递并不局限于`children`prop，你可以使用任何prop将它传递给JSX
