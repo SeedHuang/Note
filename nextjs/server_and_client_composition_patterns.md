@@ -274,4 +274,62 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
 - 在一个请求-相应的周期中，你的代码就从服务端移动到了客户端；如果此时你在客户端上想访问服务端上的数据或者资源，你就需要向服务端重新发起一个新的请求；
 - 当一个新的请求发送给服务器，所有的服务端组件将会被第一时间渲染，包括那些内嵌在客户端组件中的服务端组件；这个渲染结果（RSC Payload）将会包含客户端组件的地址的应用。然后，在客户端上，React就会使用RSC Payload来重新协调这些服务端组件和客户端组件，讲他们融入进一棵树；
-- <span style="color:red">因为客户端组件是在服务端组件之后渲染的，所以你不能在一个客户端组件中引入一个服务端组件</span>
+- ***因为客户端组件是在服务端组件之后渲染的，所以你不能在一个客户端组件中引入一个服务端组件(因为它需要向服务器返回一个新的请求)***。相对的，你可以将服务端组件作为一个`props`传递给一个客户端组件。详情请看下面“不支持的模式”和“支持的模式”；
+
+### 不支持的模式：在客户端组件中引入服务端组件
+
+以下模式是不被支持的。你不能在一个客户端组件中引入一个服务端组件
+
+```javascript
+// app/client-component.tsx
+'use client'
+ 
+// You cannot import a Server Component into a Client Component.
+import ServerComponent from './Server-Component'
+ 
+export default function ClientComponent({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const [count, setCount] = useState(0)
+ 
+  return (
+    <>
+      <button onClick={() => setCount(count + 1)}>{count}</button>
+ 
+      <ServerComponent />
+    </>
+  )
+}
+```
+
+### 支持的模式：将服务端组件作为属性传递给客户端组件
+
+以下模式是可以支持的：你可以将服务端组件作为属性传递给客户端组件。
+
+一个通用的模式就是使用React的`children`属性，要来在你的客户端组件上创建一个“slot（插槽）”。
+
+在以下的例子中，`ClientComponent`接受一个`children`属性
+
+```javascript
+// app/client-component.tsx
+'use client'
+ 
+import { useState } from 'react'
+ 
+export default function ClientComponent({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const [count, setCount] = useState(0)
+ 
+  return (
+    <>
+      <button onClick={() => setCount(count + 1)}>{count}</button>
+      {children}
+    </>
+  )
+}
+```
