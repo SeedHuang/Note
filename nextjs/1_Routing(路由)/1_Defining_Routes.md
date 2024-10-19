@@ -21,4 +21,8 @@
 
 “App Router”在一个名叫`app`的新路径下面有效。`app`程序目录与页面目录一起工作，以允许增量采用。这个使你可以选择你应用程序中的一些路由让他们有有一些新能力，同时保持其他在`pages`下的路由保持原来的能力；如果你的应用使用了`pages`目录，请查看[Pages Router](https://nextjs.org/docs/pages/building-your-application/routing)文档
 
-> 小贴士：
+> 小贴士："App Router"比"Pages Router"的优先级高。目录路由不会解析两个相同URL的路径，并且这将会造成编译时错误
+
+![1729302264277](images/1_Defining_Routes/1729302264277.png)
+
+默认情况下，在 `app`下面的组件默认都是[React服务端组件](../2_Rending(渲染)/1_server_components.md)，
