@@ -272,3 +272,26 @@ App Router使用混合方法进行路由和导航。在服务端，你的应用�
 > 小贴士：预取只有在生产状态才会被触发，在开发时不会
 
 ### 3. 缓存(Caching)
+
+Next.js有一个名为Router cache的内存客户端缓存。当用户在应用中导航时，预取路由片段和一访问过的路由的RSC Payload将存储在缓存中；
+
+这意味着在导航时，这个缓存将尽可能多的被复用，而不是向服务端发送一个新请求，这样通过减少请求数量和数据传递改善了性能；
+
+学习更多有关[Router Cache](https://nextjs.org/docs/app/building-your-application/caching#router-cache)的工作原理和如何配置；
+
+### 4. 局部渲染(Partial Rendering)
+
+局部渲染意味着只有在导航时发生变化的路线段才会在客户端上重新渲染，并且任何共享的路线段都会被保留。
+
+举例，当两个兄弟路由之间发生导航时，如`/dashboard/settings`和`/dashboard/analytics`，`setting`和`analytics`的页面将会被重新渲染，共享layout`dashboard`将会被保存.
+
+![1729345662499](images/3_Linking_And_Navigating/1729345662499.png)
+
+如果没有部分渲染，每个导航都会导致整个页面在客户端上重新渲染。仅渲染更改的段可以减少传输的数据量和执行时间，从而提高性能。
+
+### 5. 软导航(Soft Naviation)
+
+浏览器在页面导航之间执行一个“硬导航”，Next.js的App Router允许在页面之间“软导航”，确保只有已经改变的路由片段会局部渲染，这允许客户端React状态在导航期间被保存；
+
+
+### 6. 前后导航(Back and Forward Navigation)
