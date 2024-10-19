@@ -29,7 +29,6 @@
 
 更多可查看[memoization->](https://nextjs.org/docs/app/building-your-application/caching#request-memoization)
 
-
 ### 将仅服务器代码排除在客户端环境之外
 
 由于JavaScript模块可以在服务器和客户端组件模块之间共享，因此原本只打算在服务器上运行的代码有可能潜入客户端。
@@ -224,13 +223,11 @@ export default function RootLayout({
 
 > Good to know: 你应该在树中尽可能深的渲染provider，你可能已经注意到了`ThemeProvider`只包含了{children}，而没有包含整个html, 因为这个将使Next.js可以更加简单的优化你服务端组件中的静态部分
 
-
 ### 给类库开发者的建议
 
 通常来说，类库开发者创建的用来给其他开发者使用的包可以使用“use client”指令标记其包的客户端入口点。这将允许包的使用者可以之间在他们的服务端组件中导入这些包，而不用做二次包装；
 
 你可以通过在tree的更深处使用"use client"来优化你的包，这个将更多的部分作为服务端组件模块的一部分；
-
 
 ## 客户端组件模式 Client Components
 
@@ -359,7 +356,7 @@ export default function Page() {
 
 通过这个方法`ClientComponent`和`ServerComponent`是分离以及可以被独立渲染。通过这个方法，这个`ServerComponent`型的child可以在在客户端组件在客户端上被渲染之前在服务器上被渲染；
 
-> 最好知道：
+> 小贴士：
 >
 > - “lifting content up（提升内容）”的模式已经被用于避免当一个父组件被重新渲染时其内嵌的组组件也会被重新渲染；
 > - `ServerComponent`的传递并不局限于`children`prop，你可以使用任何prop将它传递给JSX
