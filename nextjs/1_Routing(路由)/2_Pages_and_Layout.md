@@ -111,4 +111,63 @@ export default function DashboardLayout({
 > 小贴士：
 >
 > - `.js`，`.jsx`，`.tsx`文件后缀的可以被用作Layout
-> - 只有Root layout（根layout）才能包含`<html/>`
+> - 只有Root layout（根layout）才能包含`<html/>`和`<body/>`标签
+> - 当`layout.js`和`page.js`文件被定义在同一个文件夹中的时候，这个layout会包含这个page
+> - Layouts默认是服务端组件，你也可以把他设置成一个客户端组件；
+> - Layout可以发获取数据，查看[Data Fetch](https://nextjs.org/docs/app/building-your-application/data-fetching)部分来获取更多信息
+> - 从父layout向子组件传递数据是不可能的。然而，你可以在一个路由中多次获取相同数据，而React则会进行[自动去除重复的请求](https://nextjs.org/docs/app/building-your-application/caching#request-memoization)以优化性能；
+> - Layout不能访问其下的路由片段。要访问所有的路由片段，你可以在一个客户端组件中使用“[useSelectedLayoutSegment](https://nextjs.org/docs/app/api-reference/functions/use-selected-layout-segment)”或者“[useSelectedLayoutSegments](https://nextjs.org/docs/app/api-reference/functions/use-selected-layout-segments)”
+> - 你可以使用“[Route Groups](https://nextjs.org/docs/app/building-your-application/routing/route-groups)”在共享布局中选择特定的route segments。
+> - 你可以使用“[Route Groups](https://nextjs.org/docs/app/building-your-application/routing/route-groups)”来创建多根布局（Root layout），看下下面的[例子](https://nextjs.org/docs/app/building-your-application/routing/route-groups#creating-multiple-root-layouts)。
+
+
+## 模板(Templates)
+
+模板与layouts在包裹他们每个子layout和page（页面）上是相似的。与跨route持久化并保持状态的布局不同，模板在导航上为每个子项创建一个新实例。这意味着当一个用户在路由之间导航时共享一个template，一个新的实例就被安装好。DOM元素被重新创建，状态不被保存，效果要重新同步；
+
+在某些情况下，您可能需要这些特定的行为，模板(Template)比布局(layout)更合适。例如：
+
+- 有些特征依赖`useEffect`(比如pageview日志)和`useState`(比如从前一个页面来的反馈)；
+- 为了要改变默认框架的行为。比如，`layout`内的`<Suspense>`仅在首次加载布局时显示fallback，而在切换页面时不显示。对于模板，fallback显示在每次导航上。
+
+一个Template可以通过从`template.js`文件中导出一个React组件来定义。这个组件需要接受一个`children`数属性(prop)
+
+![1729323075876](images/2_Pages_and_Layout/1729323075876.png)
+
+```javascript
+// app/template.tsx
+export default function Template({ children }: { children: React.ReactNode }) {
+  return <div>{children}</div>
+}
+```
+
+在嵌套方面，`template.js`在一个layout和他的子元素中被渲染，下面是一个简化的输出
+
+```javascript
+<Layout>
+  {/* Note that the template is given a unique key. */}
+  <Template key={routeParam}>{children}</Template>
+</Layout>
+```
+
+## 元数据(Metadata)
+
+在`app`目录下，你可以使用[Metadata APIs](https://nextjs.org/docs/app/building-your-application/optimizing/metadata)来改变`<head>`HTML元素，比如`<title>`和`<meta>`。
+
+元数据可以通过导出一个在`layout.js`和`page.js`的`metadata`对象或者`generateMetadata`被定义；
+
+```javascript
+// app/page.tsx
+import { Metadata } from 'next'
+ 
+export const metadata: Metadata = {
+  title: 'Next.js',
+}
+ 
+export default function Page() {
+  return '...'
+}
+```
+
+
+> 小贴士：你不应该手动在Root Layout中添加`<head>`中的标签，比如`<title>`或者`<meta>`，相对的，你应该使用能够自动出高级需求的[Metadata API](https://nextjs.org/docs/app/api-reference/functions/generate-metadata)，比如流式和消除重复的`<head>`元素
