@@ -111,4 +111,4 @@ export default function DashboardLayout({
 > 小贴士：
 >
 > - `.js`，`.jsx`，`.tsx`文件后缀的可以被用作Layout
-> - 只有Root layout（根layout）才能包含`\<html\>`
+> - 只有Root layout（根layout）才能包含`<html/>`
