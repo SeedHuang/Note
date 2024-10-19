@@ -35,7 +35,6 @@ export default function Page() {
 > - 默认情况下，页面是服务端组件，但是她可以被设置成客户端组件；
 > - 页面可以获取数据，你可以通过[Data Fetching](https://nextjs.org/docs/app/building-your-application/data-fetching)来查看更多相关信息
 
-
 ## 布局（layouts）
 
 Layout(布局)是一个在多个路由之间共享的UI，在导航时，布局会保持状态，保持交互性，并且不会重新渲染。布局也可以嵌套。
@@ -86,4 +85,30 @@ export default function RootLayout({
 }
 ```
 
-## 内嵌布局(Nesting Layouts)
+## 嵌套布局(Nesting Layouts)
+
+默认情况下，文件夹中的布局就是嵌套的，这意味着layout通过他们的`children`属性来包裹他们的子layout。你可以通过在一个专门的路由片段中添加一个`layout.js`来内嵌布局；
+
+比如：如果要为`/dashboard`路由创建一个`layout`,就需要在`dashboard`文件夹下面添加一个`layout.js`:
+
+![1729319278419](images/2_Pages_and_Layout/1729319278419.png)
+
+```javascript
+// app/dashboard/layout.tsx
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return <section>{children}</section>
+}
+```
+
+如果你将以上两个layout进行组合，Root layout（`app/layout.js`）将包裹着dashboard layout(app/dasbboard/layout.js)，相同的，dashboard layout页将包含`app/dasboard/*`下所有的片段或者说页面；
+
+![1729319582548](images/2_Pages_and_Layout/1729319582548.png)
+
+> 小贴士：
+>
+> - `.js`，`.jsx`，`.tsx`文件后缀的可以被用作Layout
+> - 只有Root layout（根layout）才能包含`\<html\>`
