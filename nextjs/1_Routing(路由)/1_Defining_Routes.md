@@ -25,4 +25,4 @@
 
 ![1729302264277](images/1_Defining_Routes/1729302264277.png)
 
-默认情况下，在 `app`下面的组件默认都是[React服务端组件](../2_Rending(渲染)/1_server_components.md)，
+默认情况下，在 `app`下面的组件默认都是[React服务端组件](../2_Rending(渲染)/1_server_components.md)，这个是一个性能优化方案并且可以让你更加容易的采纳他们，当然你也可以使用[客户端组件](../2_Rending(渲染)/2_client_components.md)
