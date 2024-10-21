@@ -296,3 +296,9 @@ Next.js有一个名为Router cache的内存客户端缓存。当用户在应用�
 ### 6. 前后导航(Back and Forward Navigation)
 
 默认情况下，Next.js会维持页面滚动位置以及前后导航，并且在[Router Cache](https://nextjs.org/docs/app/building-your-application/caching#router-cache)中重新使用这些片段
+
+### 7. 在`pages/`和`app/`之间路由(Routing between `pages/` and `app/`)
+
+当从`pages/`向`app/`增量迁移中，Next.js路由器将自动处理两者之间的硬导航；为了检测`pages/`到`app/`的转换，有一个客户端路由器过滤器，它利用应用程序路由的概率检查，这偶尔会导致误报。默认情况下，这种情况应该非常罕见，因为我们将误报率配置为0.01%。这种可能性可以通过以下方式定制，它们是`next.config.js`中的`experimental.clientRouterFilterAllowedRate`选项。值得注意的是，降低误报率将增加客户端包中生成的过滤器的大小。
+
+或者，如果您希望完全禁用此处理并手动管理`pages/`和`app/`之间的路由，可以在`next.config.js`中将`experimental.clientRouterFilter`设置为`false`。禁用此功能后，默认情况下，页面中与应用程序路线重叠的任何动态路线都不会正确导航。
