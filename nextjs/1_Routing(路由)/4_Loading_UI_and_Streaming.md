@@ -28,4 +28,4 @@
 
 ## 流式渲染和挂起(Streaming and Suspense)
 
-除了`loading.js`，你还可以给你的UI组件手动创建`<Suspense>`Boundaries。[Node.js 和 Edge 运行时](../2_Rending(渲染)/4_edge_and_nodejs_runtiems.md)都支持App Router的流式渲染和[Suspense](https://react.dev/reference/react/Suspense)
+除了`loading.js`，你还可以给你的UI组件手动创建`<Suspense>`Boundaries。[Node.js 和 Edge 运行时](../2_Rending(渲染)/4_edge_and_nodejs_runtimes.md)都支持App Router的流式渲染和[Suspense](https://react.dev/reference/react/Suspense)
