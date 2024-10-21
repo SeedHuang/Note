@@ -293,5 +293,6 @@ Next.js有一个名为Router cache的内存客户端缓存。当用户在应用�
 
 浏览器在页面导航之间执行一个“硬导航”，Next.js的App Router允许在页面之间“软导航”，确保只有已经改变的路由片段会局部渲染，这允许客户端React状态在导航期间被保存；
 
-
 ### 6. 前后导航(Back and Forward Navigation)
+
+默认情况下，Next.js会维持页面滚动位置以及前后导航，并且在[Router Cache](https://nextjs.org/docs/app/building-your-application/caching#router-cache)中重新使用这些片段
