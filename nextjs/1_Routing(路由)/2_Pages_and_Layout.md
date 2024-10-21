@@ -1,3 +1,5 @@
+[原文->](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts)
+
 # 页面和布局
 
 以下特殊文件：`layout.js`,`page.js`以及`template.js`允许你给一个路由创建UI，本篇将会指导你如何以及何时使用这些特殊文件。
@@ -120,7 +122,6 @@ export default function DashboardLayout({
 > - 你可以使用“[Route Groups](https://nextjs.org/docs/app/building-your-application/routing/route-groups)”在共享布局中选择特定的route segments。
 > - 你可以使用“[Route Groups](https://nextjs.org/docs/app/building-your-application/routing/route-groups)”来创建多根布局（Root layout），看下下面的[例子](https://nextjs.org/docs/app/building-your-application/routing/route-groups#creating-multiple-root-layouts)。
 
-
 ## 模板(Templates)
 
 模板与layouts在包裹他们每个子layout和page（页面）上是相似的。与跨route持久化并保持状态的布局不同，模板在导航上为每个子项创建一个新实例。这意味着当一个用户在路由之间导航时共享一个template，一个新的实例就被安装好。DOM元素被重新创建，状态不被保存，效果要重新同步；
@@ -168,6 +169,5 @@ export default function Page() {
   return '...'
 }
 ```
-
 
 > 小贴士：你不应该手动在Root Layout中添加`<head>`中的标签，比如`<title>`或者`<meta>`，相对的，你应该使用能够自动出高级需求的[Metadata API](https://nextjs.org/docs/app/api-reference/functions/generate-metadata)，比如流式和消除重复的`<head>`元素

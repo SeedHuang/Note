@@ -1,3 +1,5 @@
+[原文->](https://nextjs.org/docs/app/building-your-application/routing)
+
 # 定义路由
 
 每个应用的骨架就是路由，本篇将为你介绍web路由的基础概念以及如何在Next.js中处理路由；
@@ -12,7 +14,7 @@
 - SubTree（子树）：是树的一部分，一个新的根(Root)为开始以一个叶子(Leaf)结点未结束；
 - Root（根）：一个树或者子树的第一个节点，比如Root Layout
 - Leaf（叶子）：在子树中的节点，他没有其他子节点，比如下面图中，URL的最后一段
-  
+
   ![1729174617809](images/1_Defining_Routes/1729174617809.png)
 
 ### `app` 路由
@@ -53,6 +55,7 @@ Next.js使用了一种基于文件系统的路由：
 ## 文件协议
 
 Next.js提供了一组在嵌套路由中创建指定行为UI的特殊文件：
+
 
 | special file | specific behavior                                                                                 |
 | ------------ | ------------------------------------------------------------------------------------------------- |
@@ -103,4 +106,3 @@ App Router提供了一组协议来帮助你实现更加高级的路由模式，�
 - [Intercepting Routes(拦截路由)](https://nextjs.org/docs/app/building-your-application/routing/intercepting-routes)：允许拦截一个路由，并在另外一个路由的上下文中显示他。当保持当前页面的上下文很重要时你可以使用拦截路由。例如：在编辑一个任务或展开提要中的图片时查看所有任务。
 
 这些模式允许你搭建更加粉丰富和复杂的界面
-

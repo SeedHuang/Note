@@ -1,3 +1,5 @@
+[原文->](https://nextjs.org/docs/app/building-your-application/routing/linking-and-navigating)
+
 # 链接和导航（Linking和Navigating）
 
 在Next.js有四种方法在路由之间导航
@@ -104,7 +106,6 @@ Next.js App Rounter的默认行为是滚动到新路由的顶部，或保持滚�
 >
 > - 如果导航时Next.js在视口中不可见，它将滚动到页面。
 
-
 #### 禁止滚动恢复(Disabling scroll restoration)
 
 如果你想禁止滚动行为，你可以给`<link>`传递`scroll={false}`的属性，或者传递`scroll: false`给到`router.push()`或者`router.replace()`
@@ -124,7 +125,6 @@ const router = useRouter()
  
 router.push('/dashboard', { scroll: false })
 ```
-
 
 ## `useRouter()`钩子(useRouter() hook)
 
