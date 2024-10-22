@@ -1,3 +1,5 @@
+[原文->](https://nextjs.org/docs/app/building-your-application/rendering/client-components)
+
 # 客户端组件（Client Components）
 
 客户端组件允许您编写在服务器上预先渲染的交互式UI，并可以使用客户端JavaScript在浏览器中运行。

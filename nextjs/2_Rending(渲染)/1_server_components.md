@@ -1,3 +1,5 @@
+[原文->](https://nextjs.org/docs/app/building-your-application/rendering/server-components)
+
 # Server Components
 
 Server Component可以在服务器上被渲染和缓存：
@@ -105,7 +107,6 @@ Next.js使用React的API来编排渲染，渲染的工作通过独立的路由�
 
 - `cookies()` 和 `headers()` : 在服务器组件中使用这些function，会将整个路由在请求时进行动态渲染；
 - `searchParams`: 使用[Page](https://nextjs.org/docs/app/api-reference/file-conventions/page)的props上的`searchParams`属性，也会将整个路由在请求时进行动态渲染；
-
 
 ### 流式渲染(Streaming)
 
