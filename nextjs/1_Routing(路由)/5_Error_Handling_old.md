@@ -1,5 +1,7 @@
 # 错误处理(Error Handling)
 
+# 错误处理(Error Handling)
+
 `error.js`文件约定可以让你很优雅的处理在[嵌套路由](../1_Routing(路由)/1_Defining_Routes.md#嵌套路由)中的不可预期的运行时错误
 
 - 自动将路由片段及其嵌套子段包装在React错误边界中。
@@ -55,7 +57,6 @@ export default function Error({
 - 如果一个错误由`error boundary`抛出，则包含错误，并呈现回退组件。
 - 当fallback error组件被激活，`error boundary`之上的layout将保持他们的状态以及可交互，错误组件可以显示从错误中恢复的功能。
 
-
 ## 接受错误
 
 错误的原因有时可能是暂时的。这种情况下，简单的重试可能就能解决问题；
@@ -89,7 +90,6 @@ export default function Error({
 
 `error.js`边界将不会处理`layout.js`抛出的错误，因为在同一个路由片段下，`error boundary`是嵌套在`layout`组件中的。
 
-
 ## 在layout中处理错误(Handling Error in layouts)
 
 `error.js`boundaries不会catch相同路径片段中`layout.js`组件和`template.js`组件中的错误。[意图层册(Intentional hierarchy)](https://nextjs.org/docs/app/building-your-application/routing/error-handling#nested-routes)使在发生错误时在兄弟路线之间共享的重要UI（如导航）可见且可用。
@@ -105,3 +105,5 @@ export default function Error({
 如果要专门处理这些根组件的错误，需要使用一个变形的`error.js`，它是在根目录`app`下`app/global-error.js`。
 
 不像根`error.js`，这个`global-error.js`的`error boundary`包含整个应用，并且它的`fallback component`被激活的时候会替换掉`root layout`。
+
+错误可以被分成两个类别：预期错误(expected errors)以及(we)
