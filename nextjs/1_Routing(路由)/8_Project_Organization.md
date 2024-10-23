@@ -67,3 +67,10 @@ Next.js提供了许多新特性来帮助你组织你的项目。
 这表示该文件夹用于组织目的，不应包含在路由的URL路径中。
 
 ![1729691022140](images/8_Project_Organization/1729691022140.png)
+
+`Route groups`可用于：
+
+- [将路线组织成组](./7_Route_Groups.md#例子)，例如按现场部分、意图或团队。
+- 在同一级路由片段启用嵌套布局：
+  - [在同一段中创建多个嵌套布局，包括多个根布局](./7_Route_Groups.md#创建多个root-layoutcreating-multiple-root-layouts)
+  - 向公共管段中的管线子集添加布局
