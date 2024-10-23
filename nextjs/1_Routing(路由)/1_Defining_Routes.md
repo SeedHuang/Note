@@ -42,6 +42,29 @@ Next.js使用了一种基于文件系统的路由：
 
 ![1729304141209](images/1_Defining_Routes/1729304141209.png)
 
+## 跟路由(Required) Root Layout
+
+跟路由被定义在`app`目录的顶层并且应用于所有路由。这个Layout是必须的，并且必须包含`html`和`body`标签，它允许你改变从服务端反悔的初始化HTML
+
+```javascript
+// app/layout.tsx
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en">
+      <body>
+        {/* Layout UI */}
+        <main>{children}</main>
+      </body>
+    </html>
+  )
+}
+```
+
 ## 嵌套路由
 
 要创建一个嵌套路由，你可以在每个文件夹下面嵌套一个文件夹。举例子，你可以通过在 `app`路径下嵌套两个文件夹来添加 `/dashboard/settings`的新路由

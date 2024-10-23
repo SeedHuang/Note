@@ -43,3 +43,7 @@
 ![1729676475134](images/7_Route_Groups/1729676475134.png)
 
 现在，这个`loading.tsx`文件将仅应用于你的`dashboard/overview`路由组下面的页面，而不是dashboard下所有页面，而这种方式将不会影响URL路径的结构；
+
+#### 创建多个Root Layout(Creating multiple root layouts)
+
+要创建多[Root Layout](./1_Defining_Routes.md#跟路由(Required)) Root Layoutdd)，
