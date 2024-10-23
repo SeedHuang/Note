@@ -50,3 +50,143 @@ export async function createPost(id: string) {
 ## `permanentRedirect` function
 
 `permanentRedirect`功能允许你永久重定向你用户去另外一个URL。你可以在[服务端组件(Server Components)](../2_Rending(渲染)/1_server_components.md)，[路由处理器(Route Handlers)](https://nextjs.org/docs/app/building-your-application/routing/route-handlers)和[服务端动作(Server Actions)](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations)使用`parmanentRedirect`
+
+`permanetRedirect`通常用于更改实体规范URL的突变或事件之后，例如在用户更改用户名后更新其个人资料URL：
+
+```javascript
+// app/actions.ts
+
+'use server'
+ 
+import { permanentRedirect } from 'next/navigation'
+import { revalidateTag } from 'next/cache'
+ 
+export async function updateUsername(username: string, formData: FormData) {
+  try {
+    // Call database
+  } catch (error) {
+    // Handle errors
+  }
+ 
+  revalidateTag('username') // Update all references to the username
+  permanentRedirect(`/profile/${username}`) // Navigate to the new user profile
+}
+```
+
+> 小贴士
+>
+> - `permanentRedirect`默认返回308（永久重定向）状态码。
+> - `permanentRedirect`也接受绝对URL，可用于重定向到外部链接。
+> - 如果你想在渲染过程之前`redirect`，请使用next.config.js或Middleware。
+
+有关更多信息，请参阅[permanntRedirect ](https://nextjs.org/docs/app/api-reference/functions/permanentRedirect)API参考。
+
+## `useRouter()` hook
+
+如果需要在客户端组件中的事件处理程序内`redirect`，可以使用`useRouter`钩子中的`push`方法。例如：
+
+```javascript
+// app/page.tsx
+
+'use client'
+ 
+import { useRouter } from 'next/navigation'
+ 
+export default function Page() {
+  const router = useRouter()
+ 
+  return (
+    <button type="button" onClick={() => router.push('/dashboard')}>
+      Dashboard
+    </button>
+  )
+}
+```
+
+> 小贴士：
+>
+> - 如果你不需要以编程方式导航用户，你应该使用`<link>`组件。
+
+有关更多信息，请参阅[useRouter](https://nextjs.org/docs/app/api-reference/functions/use-router) API参考。
+
+## `next.config.js`中的redirects
+
+`next.config.js`文件中的`redirect`选项允许您将传入请求路径重定向到其他目标路径。当您更改页面的URL结构或拥有提前知道的重定向列表时，这很有用。
+重定向支持[path(路径)](https://nextjs.org/docs/app/api-reference/next-config-js/redirects#path-matching)、[header(标头)、cookie和query matching(查询匹配)](https://nextjs.org/docs/app/api-reference/next-config-js/redirects#header-cookie-and-query-matching)，使您能够根据传入请求灵活地重定向用户。
+
+要使用重定向，请将选项添加到`next.config.js`文件中：
+
+```javascript
+// next.config.js
+
+module.exports = {
+  async redirects() {
+    return [
+      // Basic redirect
+      {
+        source: '/about',
+        destination: '/',
+        permanent: true,
+      },
+      // Wildcard path matching
+      {
+        source: '/blog/:slug',
+        destination: '/news/:slug',
+        permanent: true,
+      },
+    ]
+  },
+}
+```
+
+有关更多信息，请参阅[重定向API](https://nextjs.org/docs/app/api-reference/next-config-js/redirects)参考。
+
+> 小贴士：
+>
+> - `redirect`可以通过设置`permant`选项返回带有的307（临时重定向）或308（永久重定向）状态码。
+> - `redirect`在平台上可能有限制。例如，在Vercel上，重定向限制为1024次。要管理大量重定向（1000+），请考虑使用[MiddleWare(中间件)](https://nextjs.org/docs/app/building-your-application/routing/middleware)创建自定义解决方案。有关更多信息，请参阅大规模管理重定向。
+> - `redirect`在Middleware之前执行
+
+## 中间件中的`NextResponse.redirect`
+
+Middleware(中间件)允许您在请求完成之前运行代码。然后，根据传入的请求，使用`NextResponse.redirect`重定向到其他URL。如果您想根据条件（例如身份验证、会话管理等）重定向用户或进行大量重定向，这很有用。
+
+```javascript
+// middleware.ts
+
+import { NextResponse, NextRequest } from 'next/server'
+import { authenticate } from 'auth-provider'
+ 
+export function middleware(request: NextRequest) {
+  const isAuthenticated = authenticate(request)
+ 
+  // If the user is authenticated, continue as normal
+  if (isAuthenticated) {
+    return NextResponse.next()
+  }
+ 
+  // Redirect to login page if not authenticated
+  return NextResponse.redirect(new URL('/login', request.url))
+}
+ 
+export const config = {
+  matcher: '/dashboard/:path*',
+}
+```
+
+> 小贴士：
+>
+> - `Middleware`中间件在`next.config.js`中`redirect`后和渲染前运行。
+
+有关更多信息，请参阅[中间件](https://nextjs.org/docs/app/building-your-application/routing/middleware)文档。
+
+## 大规模管理重定向(高级)
+
+要管理大量重定向（1000+），您可以考虑使用中间件创建自定义解决方案。这允许您以编程方式处理重定向，而无需重新部署应用程序。
+
+为此，您需要考虑：
+
+- 创建和存储重定向映射。
+- 优化数据查找性能。
+
+> Next.js示例：请参阅我们的带有[布隆过滤器（bloom filter）](../../basic/bloom_filter.md)的中间件示例，了解以下建议的实现。
