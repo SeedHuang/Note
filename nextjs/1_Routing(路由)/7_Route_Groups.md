@@ -49,3 +49,12 @@
 要创建多[Root Layout](./1_Defining_Routes.md#跟路由required-root-layout)，移除顶部`layout.js`文件，给每个`route group`中添加一个`layout.js`。这对于将应用程序划分为具有完全不同UI或体验的部分非常有用。`<html>`和`<body>`标签将被添加到每个Root layout中。
 
 ![1729678610403](images/7_Route_Groups/1729678610403.png)
+
+上面的例子中，`(marketing)`和`(shop)`的路由组都有他们自己的`Root Layout`
+
+> 小贴士
+>
+> - 路线组的命名除了组织外没有其他特殊意义。它们不会影响URL路径。
+> - 包含路由组的路由不应解析为与其他路由相同的URL路径。例如，由于路由组不影响URL结构，`(marketing) /about/page.js`和`(shop) /about/page.js`都会解析为`/about`并导致错误。
+> - 如果你使用多个根布局而没有顶级`layout.js`文件，你的主页.js文件应该在其中一个路由组中定义，例如：`app/ (marketing) /page.js`。
+> - 在多个根布局之间导航将导致整个页面加载（与客户端导航相反）。例如，从使用`app/（shop）/layout.js`的/cart导航到使用`app/`。这仅适用于多个根布局。
