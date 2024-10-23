@@ -190,3 +190,148 @@ export const config = {
 - 优化数据查找性能。
 
 > Next.js示例：请参阅我们的带有[布隆过滤器（bloom filter）](../../basic/bloom_filter.md)的中间件示例，了解以下建议的实现。
+
+### 1.创建和存储重定向映射(Creating and storing a redirect map)
+
+重定向映射是可以存储在数据库（通常是键值存储）或JSON文件中的重定向列表。
+考虑以下数据结构：
+
+```javascript
+{
+  "/old": {
+    "destination": "/new",
+    "permanent": true
+  },
+  "/blog/post-old": {
+    "destination": "/blog/post-new",
+    "permanent": true
+  }
+}
+```
+
+在[Middleware](https://nextjs.org/docs/app/building-your-application/routing/middleware)中，您可以从Vercel的[Edge Config](https://vercel.com/docs/storage/edge-config/get-started?utm_source=next-site&utm_medium=docs&utm_campaign=next-website)或[Redis](https://vercel.com/docs/storage/vercel-kv?utm_source=next-site&utm_medium=docs&utm_campaign=next-website)等数据库中读取数据，并根据传入的请求重定向用户：
+
+```javascript
+// middleware.ts
+
+import { NextResponse, NextRequest } from 'next/server'
+import { get } from '@vercel/edge-config'
+ 
+type RedirectEntry = {
+  destination: string
+  permanent: boolean
+}
+ 
+export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname
+  const redirectData = await get(pathname)
+ 
+  if (redirectData && typeof redirectData === 'string') {
+    const redirectEntry: RedirectEntry = JSON.parse(redirectData)
+    const statusCode = redirectEntry.permanent ? 308 : 307
+    return NextResponse.redirect(redirectEntry.destination, statusCode)
+  }
+ 
+  // No redirect found, continue without redirecting
+  return NextResponse.next()
+}
+```
+
+### 2.优化数据查找性能(Optimizing data lookup performance)
+
+为每个传入请求读取大型数据集可能既缓慢又昂贵。有两种方法可以优化数据查找性能：
+使用为快速读取而优化的数据库，如Vercel Edge Config或Redis。
+在读取较大的重定向文件或数据库之前，使用布隆过滤器等数据查找策略有效地检查是否存在重定向。
+考虑到前面的示例，您可以将生成的布隆过滤器文件导入中间件，然后检查布隆过滤器中是否存在传入请求路径名。
+如果是这样，请将请求转发给路由处理程序，路由处理程序将检查实际文件并将用户重定向到适当的URL。这避免了将大型重定向文件导入中间件，这可能会减慢每个传入请求的速度。
+
+```javascript
+// middleware.ts
+
+import { NextResponse, NextRequest } from 'next/server'
+import { ScalableBloomFilter } from 'bloom-filters'
+import GeneratedBloomFilter from './redirects/bloom-filter.json'
+ 
+type RedirectEntry = {
+  destination: string
+  permanent: boolean
+}
+ 
+// Initialize bloom filter from a generated JSON file
+const bloomFilter = ScalableBloomFilter.fromJSON(GeneratedBloomFilter as any)
+ 
+export async function middleware(request: NextRequest) {
+  // Get the path for the incoming request
+  const pathname = request.nextUrl.pathname
+ 
+  // Check if the path is in the bloom filter
+  if (bloomFilter.has(pathname)) {
+    // Forward the pathname to the Route Handler
+    const api = new URL(
+      `/api/redirects?pathname=${encodeURIComponent(request.nextUrl.pathname)}`,
+      request.nextUrl.origin
+    )
+ 
+    try {
+      // Fetch redirect data from the Route Handler
+      const redirectData = await fetch(api)
+ 
+      if (redirectData.ok) {
+        const redirectEntry: RedirectEntry | undefined =
+          await redirectData.json()
+ 
+        if (redirectEntry) {
+          // Determine the status code
+          const statusCode = redirectEntry.permanent ? 308 : 307
+ 
+          // Redirect to the destination
+          return NextResponse.redirect(redirectEntry.destination, statusCode)
+        }
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+ 
+  // No redirect found, continue the request without redirecting
+  return NextResponse.next()
+}
+
+```
+
+然后，在路由处理程序中：
+
+```javascript
+// app/redirect/route.ts
+
+import { NextRequest, NextResponse } from 'next/server'
+import redirects from '@/app/redirects/redirects.json'
+ 
+type RedirectEntry = {
+  destination: string
+  permanent: boolean
+}
+ 
+export function GET(request: NextRequest) {
+  const pathname = request.nextUrl.searchParams.get('pathname')
+  if (!pathname) {
+    return new Response('Bad Request', { status: 400 })
+  }
+ 
+  // Get the redirect entry from the redirects.json file
+  const redirect = (redirects as Record<string, RedirectEntry>)[pathname]
+ 
+  // Account for bloom filter false positives
+  if (!redirect) {
+    return new Response('No redirect', { status: 400 })
+  }
+ 
+  // Return the redirect entry
+  return NextResponse.json(redirect)
+}
+```
+
+> 小贴士
+>
+> - 要生成布隆过滤器，您可以使用类似[布隆过滤器的库](https://www.npmjs.com/package/bloom-filters)。
+> - 您应该验证向路由处理程序发出的请求，以防止恶意请求。
