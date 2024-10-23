@@ -46,4 +46,6 @@
 
 #### 创建多个Root Layout(Creating multiple root layouts)
 
-要创建多[Root Layout](./1_Defining_Routes.md#跟路由(Required)) Root Layoutdd)，
+要创建多[Root Layout](./1_Defining_Routes.md#跟路由required-root-layout)，移除顶部`layout.js`文件，给每个`route group`中添加一个`layout.js`。这对于将应用程序划分为具有完全不同UI或体验的部分非常有用。`<html>`和`<body>`标签将被添加到每个Root layout中。
+
+![1729678610403](images/7_Route_Groups/1729678610403.png)
