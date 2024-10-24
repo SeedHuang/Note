@@ -17,7 +17,7 @@
 | `app/blog/[slug]/page.js` | `/blog/b` | `{ slug: 'b' }` |
 | `app/blog/[slug]/page.js` | `/blog/c` | `{ slug: 'c' }` |
 
-请参阅generateStaticParams()页面，了解如何为片段生成参数。
+请参阅[generateStaticParams()](#生成静态参数generating-static-params)页面，了解如何为片段生成参数。
 
 > 小贴士：动态分段相当于`pages`目录中的动态路由。
 
