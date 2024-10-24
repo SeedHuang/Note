@@ -75,3 +75,45 @@ Next.js提供了许多新特性来帮助你组织你的项目。
   - [向公共管段中的管线子集添加布局](./7_Route_Groups.md#在layout中选择一个专门的片段opting-specific-segments-into-a-layout)
 
 ### `src`目录(src directory)
+
+Next.js支持将`app`代码（包括app）存储在可选的`src`目录中。这将应用程序代码与主要位于项目根目录中的项目配置文件分开。
+
+![1729771698500](images/8_Project_Organization/1729771698500.png)
+
+### 模块路径别名(Module Path Aliases)
+
+Next.js支持[模块路径别名](https://nextjs.org/docs/app/building-your-application/configuring/absolute-imports-and-module-aliases)，这使得跨深度嵌套的项目文件读取和维护导入变得更加容易。
+
+```javascript
+// app/dashboard/settings/analytics/page.js
+// before
+import { Button } from '../../../components/button'
+ 
+// after
+import { Button } from '@/components/button'
+```
+
+## 项目组织策略(Project organization strategies)
+
+在Next.js项目中组织自己的文件和文件夹时，没有“正确”或“错误”的方式。
+以下部分列出了常见策略的高层次概述。最简单的收获是选择一个适合你和你的团队的策略，并在整个项目中保持一致。
+
+> 小贴士：在下面的示例中，我们使用组件和库文件夹作为通用占位符，它们的命名没有特殊的框架意义，您的项目可能会使用其他文件夹，如ui、utils、hook、styles等。
+
+### 将项目文件存储在`app`之外(Store project files outside of `app`)
+
+此策略将所有应用程序代码存储在项目根目录的共享文件夹中，并将应用程序目录纯粹用于路由目的。
+
+![1729772164383](images/8_Project_Organization/1729772164383.png)
+
+### 将项目文件存储在`app`内的顶级文件夹中(Store project files in top-level folders inside of `app`)
+
+此策略将所有应用程序代码存储在`app`目录根的共享文件夹中。
+
+![1729772298282](images/8_Project_Organization/1729772298282.png)
+
+### 按要素或路由拆分项目文件(Split project files by feature or route)
+
+此策略将全局共享的应用程序代码存储在根`app`目录中，并将更具体的应用程序编码拆分为使用它们的路由段。
+
+![1729772442639](images/8_Project_Organization/1729772442639.png)
