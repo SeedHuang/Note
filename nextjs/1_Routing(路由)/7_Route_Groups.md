@@ -1,6 +1,6 @@
-[原文->](https://nextjs.org/docs/app/building-your-application/routing/route-groups)
-
 # 路由组(Route Groups)
+
+[原文->](https://nextjs.org/docs/app/building-your-application/routing/route-groups)
 
 在`app`目录下，嵌套文件夹通常会映射到URL的路径上。然而，你可以把一个文件夹标记为一个路由组(Route Group)文件夹被包含在路由的URL路径中。
 

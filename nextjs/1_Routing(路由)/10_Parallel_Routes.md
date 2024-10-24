@@ -1,5 +1,7 @@
 # 并行路由(Parallel Routes)
 
+[原文->](https://nextjs.org/docs/app/building-your-application/routing/parallel-routes)
+
 并行路由允许您在同一布局中同时或有条件地渲染一个或多个页面。它们对于应用程序的高度动态部分非常有用，例如社交网站上的仪表板和提要。
 
 例如，考虑到仪表板，您可以使用并行路由同时呈现`team`和`analytics`页面：

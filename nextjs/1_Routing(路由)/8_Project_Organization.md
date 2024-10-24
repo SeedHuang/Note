@@ -1,6 +1,6 @@
-[原文->](https://nextjs.org/docs/app/building-your-application/routing/colocation)
-
 # 项目组织和文件托管(Project Organization and File Colocation)
+
+[原文->](https://nextjs.org/docs/app/building-your-application/routing/colocation)
 
 除了路由[文件夹(routing folder)和文件约定(file conventions)](https://nextjs.org/docs/getting-started/project-structure#app-routing-conventions)外，Next.js对如何组织和托管项目文件没有异议。
 

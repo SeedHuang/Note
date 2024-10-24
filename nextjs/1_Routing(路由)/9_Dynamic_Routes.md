@@ -1,6 +1,6 @@
-[原文->](https://nextjs.org/docs/app/building-your-application/routing/dynamic-routes)
-
 # 动态路由(Dynamic Routes)
+
+[原文->](https://nextjs.org/docs/app/building-your-application/routing/dynamic-routes)
 
 当您提前不知道确切的片段名称并希望从动态数据创建路由时，可以使用在请求时填写或在构建时预先渲染的动态片段。
 
@@ -9,6 +9,7 @@
 动态段可以通过将文件夹的名称括在方括号中来创建：[folderName]。例如，[id]或[slug]。
 
 动态分段作为参数道具传递给[布局`layout`](https://nextjs.org/docs/app/api-reference/file-conventions/layout)、[页面`page`](https://nextjs.org/docs/app/api-reference/file-conventions/page)、[路由`route`](https://nextjs.org/docs/app/api-reference/file-conventions/route)和[`generateMetadata`](https://nextjs.org/docs/app/api-reference/functions/generate-metadata#generatemetadata-function)函数。
+
 
 | 路由                      | 示例地址  | 参数            |
 | ------------------------- | --------- | --------------- |
@@ -48,6 +49,7 @@ export async function generateStaticParams() {
 
 例如，`app/shop/[…slug]/page.js`将匹配`/shop/hettes`，但也会匹配`/shop/gettes/tops`、`/shop/garts/tops/t`恤等。
 
+
 | 路由                         | 示例地址     | 参数                        |
 | ---------------------------- | ------------ | --------------------------- |
 | `app/shop/[...slug]/page.js` | `/shop/`     | `{ shop: ['a'] }`           |
@@ -63,10 +65,11 @@ export async function generateStaticParams() {
 例如，`app/shop/[[…slug]]/page.js`除了`/shop/hettes`、`/shop/hotels/tops`、`/shop/chotels/tops/`t恤之外，还将匹配`/shop`。
 **catch-all**和**optional catch-all**段之间的区别在于，使用optional时，也会匹配不带参数的路由（上例中的/shop）。
 
-| 路由                         | 示例地址     | 参数                        |
-| ---------------------------- | ------------ | --------------------------- |
-| `app/shop/[[...slug]]/page.js` | `/shop/`     | `{ shop: undefined }`           |
-| `app/shop/[[...slug]]/page.js` | `/shop/a`     | `{ shop: ['a'] }`           |
+
+| 路由                           | 示例地址     | 参数                        |
+| ------------------------------ | ------------ | --------------------------- |
+| `app/shop/[[...slug]]/page.js` | `/shop/`     | `{ shop: undefined }`       |
+| `app/shop/[[...slug]]/page.js` | `/shop/a`    | `{ shop: ['a'] }`           |
 | `app/shop/[[...slug]]/page.js` | `/shop/a/b`  | `{ shop: ['a', 'b'] }`      |
 | `app/shop/[[...slug]]/page.js` | `/shop/a/b/c | `{ shop: ['a', 'b', 'c'] }` |
 
@@ -74,12 +77,10 @@ export async function generateStaticParams() {
 
 使用TypeScript时，您可以根据配置的路由段为`params`添加类型。
 
-| 路由                         | `params`Type Definition    |
-| ---------------------------- | ------------ | 
-| `app/blog/[slug]/page.js` | { slug: string }     |
-| `app/blog/[...slug]/page.js` | { slug: string[] }     |
-| `app/blog/[[...slug]]/page.js` | { slug?: string[] }     |
-| `app/blog/[categoryId]/[itemId]/page.js` | { categoryId:string, itemId: string }     |
 
-
-
+| 路由                                     | `params`Type Definition               |
+| ---------------------------------------- | ------------------------------------- |
+| `app/blog/[slug]/page.js`                | { slug: string }                      |
+| `app/blog/[...slug]/page.js`             | { slug: string[] }                    |
+| `app/blog/[[...slug]]/page.js`           | { slug?: string[] }                   |
+| `app/blog/[categoryId]/[itemId]/page.js` | { categoryId:string, itemId: string } |

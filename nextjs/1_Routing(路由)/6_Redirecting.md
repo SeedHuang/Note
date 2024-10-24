@@ -1,6 +1,6 @@
-[原文->](https://nextjs.org/docs/app/building-your-application/routing/redirecting)
-
 # 重定向(Redirecting)
+
+[原文->](https://nextjs.org/docs/app/building-your-application/routing/redirecting)
 
 在Next.js中有许多处理重定向(redirects)的方式。本页将介绍每个可用选项、用例以及如何管理大量重定向。
 
