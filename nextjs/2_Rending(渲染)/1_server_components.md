@@ -57,7 +57,7 @@ Next.js使用React的API来编排渲染，渲染的工作通过独立的路由�
 - 动态渲染（dynamic rending）
 - 流渲染（Streaming）
 
-### 静态渲染（默认渲染方式）
+### 静态渲染(Static Rendering)（默认渲染方式Default）
 
 静态渲染和路由都发生在打包编译(building)的时候，或者在数据重新校验后。缓存结果可以被推送到CDN上，这个优化可以让你在不同用户和不用请求中共享渲染结果；
 
