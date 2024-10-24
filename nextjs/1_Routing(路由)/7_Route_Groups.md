@@ -30,7 +30,7 @@
 
 ![1729671174421](images/7_Route_Groups/1729671174421.png)
 
-#### 在layout中选择一个专门的片段(Opting for loading skeletons on a specific route)
+#### 在layout中选择一个专门的片段(Opting specific segments into a layout)
 
 要在布局中选择特定路线，请创建一个新的`Route Group`（例如：商店），并将共享相同`layout`的路线移动到组中（例如帐户和购物车）。组外的路线将不共享`layout`（例如结账）。
 
