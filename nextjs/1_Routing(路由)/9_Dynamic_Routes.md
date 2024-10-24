@@ -23,4 +23,4 @@
 
 ## 生成静态参数(Generating Static Params)
 
-`generateStaticParams`函数可以与Dynamic Route Segement结合使用，在构建时静态生成(statically generate)路由，而不是在请求时按需生成。
+`generateStaticParams`函数可以与Dynamic Route Segement结合使用，在构建时[静态生成(statically generate)](../2_Rending(渲染)/1_server_components.md#静态渲染static-rendering默认渲染方式default)路由，而不是在请求时按需生成。
