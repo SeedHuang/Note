@@ -33,11 +33,9 @@
 > - 这与`pages`目录不同，在`pages`目录中，任何文件都被视为路由。
 > - 虽然你可以在`app`中托管你的项目文件，但你不必这样做。如果你愿意，你可以把它们放在`app`目录之外。
 
-
 ## 项目组织特点(Project organization features)
 
 Next.js提供了许多新特性来帮助你组织你的项目。
-
 
 ### 私有文件夹(Private Folders)
 
@@ -73,4 +71,4 @@ Next.js提供了许多新特性来帮助你组织你的项目。
 - [将路线组织成组](./7_Route_Groups.md#例子)，例如按现场部分、意图或团队。
 - 在同一级路由片段启用嵌套布局：
   - [在同一段中创建多个嵌套布局，包括多个根布局](./7_Route_Groups.md#创建多个root-layoutcreating-multiple-root-layouts)
-  - 向公共管段中的管线子集添加布局
+  - [向公共管段中的管线子集添加布局](./7_Route_Groups.md)
