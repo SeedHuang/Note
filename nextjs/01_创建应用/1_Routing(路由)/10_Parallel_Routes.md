@@ -67,7 +67,7 @@ export default function Layout({
 
 ### `useSelectedLayoutSegment(s)`
 
-[`usedLayoutSegment`](https://nextjs.org/docs/app/api-reference/functions/use-selected-layout-segment)和[`usedLayoutSegments`](https://nextjs.org/docs/app/api-reference/functions/use-selected-layout-segments)都接受`parallelRoutesKey`参数，该参数允许您读取插槽内的活动路由片段(active route segment)。
+[`usedLayoutSegment`](../../02_API_Reference/03_Functions/24_useSelectedLayoutSegment.md)和[`usedLayoutSegments`](../../02_API_Reference/03_Functions/25_useSelectedLayoutSegments.md)都接受`parallelRoutesKey`参数，该参数允许您读取插槽内的活动路由片段(active route segment)。
 
 ```javascript
 // app/layout.tsx
