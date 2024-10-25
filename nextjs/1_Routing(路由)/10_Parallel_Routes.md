@@ -40,7 +40,7 @@ export default function Layout({
 但是，插槽`slots`不是`route segments`，也不影响URL结构。例如，对于`/@analytics/views`，URL将是`/views`，因为`@analytics`是一个插槽。插槽与常规页面组件组合在一起，形成与路由片段相关的最终页面。因此，在同一路由片段级别上不能有单独的静态和动态插槽。如果一个插槽是动态的，则该级别的所有插槽都必须是动态的。
 
 > 小贴士
->
+> 
 > - `children`属性具是一个隐式插槽，不需要映射到文件夹。这意味着`app/page.js`相当于`app/@children/page.js`。
 
 ## 活动状态和导航(Active state and navigation)
@@ -49,15 +49,15 @@ export default function Layout({
 
 [软导航(Soft Navigation)](./3_Linking_And_Navigating.md#3_Linking_And_Navigating.md#5-软导航soft-navigation)：在客户端导航期间，Next.js将执行部分渲染，更改插槽内的子页面，同时保持其他插槽的活动子页面，即使它们与当前URL不匹配。
 
-硬导航(hard Navigation)：在整个页面加载（浏览器刷新）后，Next.js无法确定与当前URL不匹配的插槽的活动状态。相反，它将为不匹配的槽呈现一个`default.js`文件，如果`default.js`不存在，则呈现404。
+硬导航(hard Navigation)：在整个页面加载（浏览器刷新）后，Next.js无法确定与当前URL不匹配的插槽的活动状态。相反，它将为不匹配的槽呈现一个[`default.js`](#defaultjs)文件，如果`default.js`不存在，则呈现404。
 
 > 小贴士：
->
+> 
 > - 404 对于无合适的路由是有助于确保您不会意外地在页面上呈现非预期的并行路由。
-
 
 ### `default.js`
 
 您可以定义一个default.js文件，作为初始加载或全页面重新加载期间不匹配插槽的回退。
 
 ![1729837959678](images/10_Parallel_Routes/1729837959678.png)
+
