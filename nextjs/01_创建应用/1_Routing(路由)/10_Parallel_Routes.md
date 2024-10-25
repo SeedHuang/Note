@@ -134,7 +134,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 }
 ```
 
-### Modals(情态动词)
+### Modals(模态)
 
 并行路由可以与拦截路由一起使用，以创建支持深度链接的模型。这使您能够解决构建模型时的常见挑战，例如：
 
@@ -147,3 +147,42 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 ![1729864396747](images/10_Parallel_Routes/1729864396747.png)
 
 要实现此模式，首先创建一个呈现主登录页面的`/login`路由。
+
+![1729864789969](images/10_Parallel_Routes/1729864789969.png)
+
+```javascript
+// app/login/page.tsx
+
+import { Login } from '@/app/ui/login'
+ 
+export default function Page() {
+  return <Login />
+}
+```
+
+然后，在`@auth`槽中，添加返回`null`的`default.js`文件。这确保了模态在不活动时不会被渲染。
+
+```javascript
+// app/@auth/default/tsx
+
+export default function Default() {
+  return '...'
+}
+```
+
+在`@auth`插槽中，通过更新`/(.)login`文件夹来拦截`/login`路由。将`<Modal>`组件及其子组件导入到`/(.)login/page.tsx`文件中：
+
+```javascript
+// app/@auth/(.)login/page.tsx
+
+import { Modal } from '@/app/ui/modal'
+import { Login } from '@/app/ui/login'
+ 
+export default function Page() {
+  return (
+    <Modal>
+      <Login />
+    </Modal>
+  )
+}
+```
