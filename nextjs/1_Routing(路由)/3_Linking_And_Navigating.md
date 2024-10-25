@@ -291,7 +291,7 @@ Next.js有一个名为Router cache的内存客户端缓存。当用户在应用�
 
 ### 5. 软导航(Soft Naviation)
 
-浏览器在页面导航之间执行一个“硬导航”，Next.js的App Router允许在页面之间“软导航”，确保只有已经改变的路由片段会局部渲染，这允许客户端React状态在导航期间被保存；
+浏览器在页面之间导航时执行“硬导航”。Next.js App Router支持页面之间的“软导航”，确保只重新渲染已更改的路线段（部分渲染）。这使得客户端React状态在导航过程中得以保留。
 
 ### 6. 前后导航(Back and Forward Navigation)
 

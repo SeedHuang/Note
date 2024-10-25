@@ -42,3 +42,9 @@ export default function Layout({
 > 小贴士
 >
 > - `children`属性具是一个隐式插槽，不需要映射到文件夹。这意味着`app/page.js`相当于`app/@children/page.js`。
+
+## 活动状态和导航(Active state and navigation)
+
+默认情况下，Next.js会跟踪每个插槽的活动状态（或子页面）。但是，在插槽中呈现的内容将取决于导航类型：
+
+[软导航(Soft Navigation)](./3_Linking_And_Navigating.md#5-软导航soft-naviation)：在客户端导航期间，Next.js将执行部分渲染，更改插槽内的子页面，同时保持其他插槽的活动子页面，即使它们与当前URL不匹配。
