@@ -30,5 +30,5 @@ export default function ExampleClientComponent() {
 const segment = useSelectedLayoutSegment(parallelRoutesKey?: string)
 ```
 
-`useSelectedLayoutSegment`可选地接受一个[`parallelRoutesKey`](../../01_创建应用/1_Routing(路由)/10_Parallel_Routes.md#useselectedlayoutsegme)，它允许您读取该插槽中的活动路由片段。
+`useSelectedLayoutSegment`可选地接受一个[`parallelRoutesKey`](../../01_创建应用/1_Routing(路由)/10_Parallel_Routes.md#useselectedlayoutsegments)，它允许您读取该插槽中的活动路由片段。
 
