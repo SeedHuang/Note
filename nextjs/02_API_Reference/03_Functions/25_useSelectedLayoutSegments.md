@@ -36,5 +36,18 @@ export default function ExampleClientComponent() {
 const segments = useSelectedLayoutSegments(parallelRoutesKey?: string)
 ```
 
-`useSelectedLayoutSegments`可选地接受一个[`paralleRoutesKey`](../../1_Routing(路由)/10_Parallel_Routes.md#useselectedlayoutsegments)，它允许您读取该插槽中的激活路由片段。
+`useSelectedLayoutSegments`可选地接受一个[`paralleRoutesKey`](../../1_Routing(路由)/10_Parallel_Routes.md#useselectedlayoutsegments)，它允许您读取该插槽中的`激活路由片段(active route segment)`。
+
+## 返回值
+
+`useSelectedLayoutSegments`返回一个字符串数组，其中包含从调用钩子的布局向下一级的激活片段(active segment)。或者，如果不存在，则为空数组。
+例如，给定下面的布局和URL，返回的片段将是：
+
+| Layout          | Visited URL | Returned Segments |
+| --------------- | ----------- | ----------------- |
+| `app/layout.js` | /            |            []       |
+|  `app/layout.js`               |   `/dashboard `         |      `['dashboard']`             |
+|  `app/layout.js`               |   `/dashboard/settings `         | `['dashboard', 'settings']`                  |
+|  `app/dashboard/layout.js`               |   `/dashboard`          |           `[]`       |
+|  `app/dashboard/layout.js`                 |   `/dashboard/settings `         |     `['settings']`              |
 
