@@ -61,3 +61,24 @@ export default function Layout({
 
 ![1729837959678](images/10_Parallel_Routes/1729837959678.png)
 
+当导航到`/settings`时，`@team`插槽将呈现`/settings`页面，同时保持`@analytics`插槽的当前活动页面。
+刷新后，Next.js将为`@analytics`渲染一个`default.js`。如果default.js不存在，则呈现404。
+此外，由于children是一个隐式插槽，当Next.js无法恢复父页面的活动状态时，您还需要创建一个default.js文件来为children呈现回退。
+
+### `useSelectedLayoutSegment(s)`
+
+[`usedLayoutSegment`](https://nextjs.org/docs/app/api-reference/functions/use-selected-layout-segment)和[`usedLayoutSegments`](https://nextjs.org/docs/app/api-reference/functions/use-selected-layout-segments)都接受`parallelRoutesKey`参数，该参数允许您读取插槽内的活动路由片段(active route segment)。
+
+```javascript
+// app/layout.tsx
+
+'use client'
+ 
+import { useSelectedLayoutSegment } from 'next/navigation'
+ 
+export default function Layout({ auth }: { auth: React.ReactNode }) {
+  const loginSegment = useSelectedLayoutSegment('auth')
+  // ...
+}
+```
+
