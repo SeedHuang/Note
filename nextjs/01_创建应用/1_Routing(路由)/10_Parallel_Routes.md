@@ -40,7 +40,7 @@ export default function Layout({
 但是，插槽`slots`不是`route segments`，也不影响URL结构。例如，对于`/@analytics/views`，URL将是`/views`，因为`@analytics`是一个插槽。插槽与常规页面组件组合在一起，形成与路由片段相关的最终页面。因此，在同一路由片段级别上不能有单独的静态和动态插槽。如果一个插槽是动态的，则该级别的所有插槽都必须是动态的。
 
 > 小贴士
-> 
+>
 > - `children`属性具是一个隐式插槽，不需要映射到文件夹。这意味着`app/page.js`相当于`app/@children/page.js`。
 
 ## 活动状态和导航(Active state and navigation)
@@ -52,7 +52,7 @@ export default function Layout({
 硬导航(hard Navigation)：在整个页面加载（浏览器刷新）后，Next.js无法确定与当前URL不匹配的插槽的活动状态。相反，它将为不匹配的槽呈现一个[`default.js`](#defaultjs)文件，如果`default.js`不存在，则呈现404。
 
 > 小贴士：
-> 
+>
 > - 404 对于无合适的路由是有助于确保您不会意外地在页面上呈现非预期的并行路由。
 
 ### `default.js`
@@ -82,3 +82,68 @@ export default function Layout({ auth }: { auth: React.ReactNode }) {
 }
 ```
 
+## 举例
+
+### 条件路由(Conditional Routes)
+
+您可以使用Parallel Routes(并行路由)根据特定条件（如用户角色）有条件地渲染路由。例如，要为`/admin`或`/user`角色呈现不同的仪表板页面：
+
+![1729863282740](images/10_Parallel_Routes/1729863282740.png)
+
+```javascript
+// app/dashboard/layout.tsx
+
+import { checkUserRole } from '@/lib/auth'
+ 
+export default function Layout({
+  user,
+  admin,
+}: {
+  user: React.ReactNode
+  admin: React.ReactNode
+}) {
+  const role = checkUserRole()
+  return <>{role === 'admin' ? admin : user}</>
+}
+```
+
+### 标签组(Tab Groups)
+
+您可以在插槽内添加布局，以允许用户独立导航插槽。这对于创建选项卡很有用。
+例如，@analytics插槽有两个子页面：`/page-views`和`/visitors`。
+
+![1729863524220](images/10_Parallel_Routes/1729863524220.png)
+
+在`@analytics`中，创建一个`layout`文件以在两个页面之间共享选项卡：
+
+```javascript
+// app/@analytics/layout.tsx
+
+import Link from 'next/link'
+ 
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <nav>
+        <Link href="/page-views">Page Views</Link>
+        <Link href="/visitors">Visitors</Link>
+      </nav>
+      <div>{children}</div>
+    </>
+  )
+}
+```
+
+### Modals(情态动词)
+
+并行路由可以与拦截路由一起使用，以创建支持深度链接的模型。这使您能够解决构建模型时的常见挑战，例如：
+
+- 使模态内容可通过URL共享。
+- 刷新页面时保留上下文，而不是关闭模式。
+- 在向后导航时关闭模式，而不是转到前一条路线。
+- 重新打开正向导航模式。
+
+考虑以下UI模式，用户可以使用客户端导航从布局打开登录模式，或访问单独的`/login`页面：
+![1729864396747](images/10_Parallel_Routes/1729864396747.png)
+
+要实现此模式，首先创建一个呈现主登录页面的`/login`路由。
