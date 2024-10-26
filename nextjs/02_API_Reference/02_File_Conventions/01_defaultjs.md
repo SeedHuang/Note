@@ -1,8 +1,7 @@
 # default.js
 
-`default.js`文件用于在Next.js在加载完整页面后无法恢复插槽的活动状态时，在Parallel Routes中呈现回退。
-在软导航期间，Next.js会跟踪每个插槽的活动状态（子页面）。但是，对于硬导航（全页面加载），Next.js无法恢复活动状态。在这种情况下，可以为与当前URL不匹配的子页面呈现default.js文件。
-考虑以下文件夹结构。`@team`插槽有一个`settings`页面，但`@analytics`没有。
+
+default.js`文件用于在Next.js在加载完整页面后无法恢复插槽的活动状态时，在Parallel Routes中呈现回退。 在软导航期间，Next.js会跟踪每个插槽的活动状态（子页面）。但是，对于硬导航（全页面加载），Next.js无法恢复活动状态。在这种情况下，可以为与当前URL不匹配的子页面呈现default.js文件。 考虑以下文件夹结构。`@team`插槽有一个`settings`页面，但`@analytics`没有。
 
 ![1729922894731](images/01_defaultjs/1729922894731.png)
 

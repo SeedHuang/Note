@@ -57,6 +57,31 @@ export default function Layout({
 
 ### `default.js`
 
+> `default.js`自己的一个小小认知，default.js在parrallel route中配合导航栏中的地址使用的工具，简单的说如果导航栏地址是/a/b/c,如果你对应的`@xxxx`下面没有对应的路径，它就会使用default.js作为默认显示，
+>
+> ```
+> /app
+> ----/@team
+> --------/b
+> -----/b
+> ---------/c
+> 平行路由和正常路由有一一对应关系
+>
+> 而Next.js存在很多契约行的文件
+>
+> // 平行地址
+> /@team/b
+>
+> // 用户访问
+> localhost:3000/b
+> 可以正常显示/@team/b/page.js的内容
+>
+> //但是用户访问
+> localhost:3000/b/c页面的时候，因为@team/b下面没有对应的c路径，所以就会找不到，一旦找不到，就会触发default.js，default
+>
+>
+> ```
+
 您可以定义一个default.js文件，作为初始加载或全页面重新加载期间不匹配插槽的回退。
 
 ![1729837959678](images/10_Parallel_Routes/1729837959678.png)
