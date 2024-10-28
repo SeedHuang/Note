@@ -16,3 +16,24 @@ default.js`文件用于在Next.js在加载完整页面后无法恢复插槽的�
 
 一个promise，解析为一个对象，该对象包含从根段到插槽子页面的[动态路由参数(dynamic route parameters)](../../01_创建应用/1_Routing(路由)/9_Dynamic_Routes.md)。例如：
 
+```javascript
+// app/[artist]/@sidebar/default.js
+
+export default async function Default({
+  params,
+}: {
+  params: Promise<{ artist: string }>
+}) {
+  const artist = (await params).artist
+}
+```
+
+
+
+| 列子                                     | URL        | `params`                                      |
+| ---------------------------------------- | ---------- | --------------------------------------------- |
+| app/[artist]/@sidebar/default.js         | /zack      | `Promise(<{ artist: 'zack' }>)`               |
+| app/[artist]/[album]/@sidebar/default.js | /zack/next | `Promise(<{ artist: 'zack', album: 'next'}>)` |
+
+因为`params` prop是一个promise。您必须使用`async/await`或React的[use](https://react.dev/reference/react/use)函数来访问这些值。
+在版本14和更早的版本中，params是一个同步道具。为了提高向后兼容性，你仍然可以在Next.js 15中同步访问它，但这种行为将来会被弃用。
