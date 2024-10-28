@@ -214,3 +214,109 @@ export default function Page() {
 >
 > - 用于拦截路由的约定，例如(.)，取决于您的文件系统结构。参见[拦截路线](https://nextjs.org/docs/app/building-your-application/routing/intercepting-routes#convention)惯例。
 >   通过将<Modal>功能与模态内容`(<Login>)`分离，您可以确保模态中的任何内容（例如[表单forms](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations#forms)）都是服务器组件。有关更多信息，请参阅[交错客户端和服务器组件](../../01_创建应用/2_Rending(渲染)/3_server_and_client_composition_patterns.md#支持的模式将服务端组件作为属性传递给客户端组件)。
+
+#### 打开模态模式(Opening the modal)
+
+现在，您可以利用Next.js路由器打开和关闭模态。这可确保在打开模态模式以及前后导航时正确更新URL。
+要打开模式，请将@auth插槽作为prop传递给父布局，并将其与`children` prop一起渲染。
+
+```javascript
+// app/layout.tsx
+
+import Link from 'next/link'
+ 
+export default function Layout({
+  auth,
+  children,
+}: {
+  auth: React.ReactNode
+  children: React.ReactNode
+}) {
+  return (
+    <>
+      <nav>
+        <Link href="/login">Open modal</Link>
+      </nav>
+      <div>{auth}</div>
+      <div>{children}</div>
+    </>
+  )
+}
+```
+
+当用户单击 `<Link>`时，“模态模式”将打开，而不是导航到`/login`页面。但是，在刷新或初始加载时，导航到`/login`将使用户进入主登录页面。
+
+#### 关闭模态模式(Closing the Modal)
+
+您可以通过调用`router.back()`或使用`<Link>`组件来关闭模式。
+
+```javascript
+// app/ui/modal.tsx
+
+'use client'
+ 
+import { useRouter } from 'next/navigation'
+ 
+export function Modal({ children }: { children: React.ReactNode }) {
+  const router = useRouter()
+ 
+  return (
+    <>
+      <button
+        onClick={() => {
+          router.back()
+        }}
+      >
+        Close modal
+      </button>
+      <div>{children}</div>
+    </>
+  )
+}
+```
+
+当使用`<Link>`组件导航离开不应再呈现`@auth`插槽的页面时，我们需要确保`并行路由(parrallel routes)`与返回`null`的组件匹配。例如，当导航回根页面时，我们创建了一个`@auth/page.tsx`组件：
+
+```javascript
+// app/ui/modal.tsx
+
+import Link from 'next/link'
+ 
+export function Modal({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <Link href="/">Close modal</Link>
+      <div>{children}</div>
+    </>
+  )
+}
+```
+
+```javascript
+// app/@auth/page.tsx
+
+export default function Page() {
+  return '...'
+}
+```
+
+或者，如果导航到任何其他页面（如/foo、/foo/bar等），您可以使用一个包罗万象(catch-all)的插槽：
+
+```javascript
+export default function CatchAll() {
+  return '...'
+}
+```
+
+> 小贴士：
+>
+> - 由于[活动状态和导航](##活动状态和导航active-state-and-navigation)中描述的行为，我们在`@auth`插槽中使用了一条包罗万象(`catch-all`)的路由来关闭模态。由于客户端对不再匹配插槽的路由的导航将保持可见，因此我们需要将插槽与返回null的路由相匹配以关闭模态。
+> - 查看具有拦截和平行路线的[模态示例](https://github.com/vercel/nextgram)。
+
+### 加载和错误UI(Loading and Error UI)
+
+并行路由可以独立流式传输，允许您为每条路由定义独立的错误和加载状态：
+
+![1730102098516](images/10_Parallel_Routes/1730102098516.png)
+
+有关更多信息，请参阅[加载UI](./4_Loading_UI_and_Streaming.md)和[错误处理](./5_Error_Hanlding_new.md)文档。
