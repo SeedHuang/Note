@@ -78,8 +78,6 @@ export default function Layout({
 >
 > //但是用户访问
 > localhost:3000/b/c页面的时候，因为@team/b下面没有对应的c路径，所以就会找不到，一旦找不到，就会触发default.js，default
->
->
 > ```
 
 您可以定义一个default.js文件，作为初始加载或全页面重新加载期间不匹配插槽的回退。
@@ -161,7 +159,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
 ### Modals(模态)
 
-并行路由可以与拦截路由一起使用，以创建支持深度链接的模型。这使您能够解决构建模型时的常见挑战，例如：
+并行路由可以与[拦截路由(Intercepting routes)](./11_Intercepting_Routes.md)一起使用，以创建支持深度链接的模型。这使您能够解决构建模型时的常见挑战，例如：
 
 - 使模态内容可通过URL共享。
 - 刷新页面时保留上下文，而不是关闭模式。
@@ -211,3 +209,8 @@ export default function Page() {
   )
 }
 ```
+
+> 小贴士：
+>
+> - 用于拦截路由的约定，例如(.)，取决于您的文件系统结构。参见[拦截路线](https://nextjs.org/docs/app/building-your-application/routing/intercepting-routes#convention)惯例。
+>   通过将<Modal>功能与模态内容`(<Login>)`分离，您可以确保模态中的任何内容（例如[表单forms](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations#forms)）都是服务器组件。有关更多信息，请参阅[交错客户端和服务器组件](../../01_创建应用/2_Rending(渲染)/3_server_and_client_composition_patterns.md#支持的模式将服务端组件作为属性传递给客户端组件)。
