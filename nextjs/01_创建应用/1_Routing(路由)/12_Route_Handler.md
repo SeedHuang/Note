@@ -88,3 +88,9 @@ export async function POST(request) {}
 ---
 
 ## 例子
+
+以下示例显示了如何将路由处理程序与其他Next.js API和功能组合在一起。
+
+### 重新验证缓存数据(Revalidating Cached Data)
+
+您可以使用增量静态再生（ISR）重新验证缓存数据：
