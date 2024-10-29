@@ -55,11 +55,9 @@ export async function GET() {
 >
 > 其他受支持的HTTP方法不会被缓存，即使它们与缓存的GET方法放在同一个文件中。
 
-
 ### 特殊路由处理器(Special Route Handlers)
 
 特殊的路由处理程序，如`sitemap.ts`、`opengraph-image.tsx`和`icon.tsx`，以及其他元数据文件，默认情况下保持静态，除非它们使用动态API或动态配置选项。
-
 
 ### 路线解析(Route Resolution)
 
@@ -67,3 +65,26 @@ export async function GET() {
 
 - 它们不参与页面等布局或客户端导航。
 - 不能有与`page.js`位于同一路由的`route.js`文件。
+
+
+| Page                 | Route              | Result  |
+| -------------------- | ------------------ | ------- |
+| `app/page.js`        | `app/route.js`     | x 冲突  |
+| `app/page.js`        | `app/api/route.js` | ✓ 正常 |
+| `app/[user]/page.js` | `app/api/route.js` | ✓ 正常 |
+
+每个`route.js`或`page.js`文件都会接管该路由的所有HTTP谓词。
+
+```javascript
+export default function Page() {
+  return <h1>Hello, Next.js!</h1>
+}
+ 
+// ❌ Conflict
+// `app/route.js`
+export async function POST(request) {}
+```
+
+---
+
+## 例子
