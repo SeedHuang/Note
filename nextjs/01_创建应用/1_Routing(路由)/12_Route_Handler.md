@@ -25,3 +25,45 @@ export async function GET(request: Request) {}
 
 除了支持[本地请求](https://developer.mozilla.org/zh-CN/docs/Web/API/Request)和[响应API](https://developer.mozilla.org/zh-CN/docs/Web/API/Response)外，Next.js还通过[`NextRequest`](https://nextjs.org/docs/app/api-reference/functions/next-request)和[`NextResponse`](https://nextjs.org/docs/app/api-reference/functions/next-response)对其进行了扩展，为高级用例提供了方便的助手。
 
+---
+
+## 行为(Behavior)
+
+### 缓存(Caching)
+
+默认情况下，路由处理程序不会被缓存。但是，您可以选择对`GET`方法进行缓存。其他支持的HTTP方法不会被缓存。要缓存GET方法，请在路由处理程序文件中使用路由配置选项，例如`export const dynamic='force static'`。
+
+```javascript
+// app/items/route.ts
+
+export const dynamic = 'force-static'
+ 
+export async function GET() {
+  const res = await fetch('https://data.mongodb-api.com/...', {
+    headers: {
+      'Content-Type': 'application/json',
+      'API-Key': process.env.DATA_API_KEY,
+    },
+  })
+  const data = await res.json()
+ 
+  return Response.json({ data })
+}
+```
+
+> 小贴士：
+>
+> 其他受支持的HTTP方法不会被缓存，即使它们与缓存的GET方法放在同一个文件中。
+
+
+### 特殊路由处理器(Special Route Handlers)
+
+特殊的路由处理程序，如`sitemap.ts`、`opengraph-image.tsx`和`icon.tsx`，以及其他元数据文件，默认情况下保持静态，除非它们使用动态API或动态配置选项。
+
+
+### 路线解析(Route Resolution)
+
+您可以将`路由(route)`视为最低级别的路由图元。
+
+- 它们不参与页面等布局或客户端导航。
+- 不能有与`page.js`位于同一路由的`route.js`文件。
