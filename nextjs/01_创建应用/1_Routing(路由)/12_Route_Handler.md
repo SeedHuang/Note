@@ -52,7 +52,7 @@ export async function GET() {
 ```
 
 > 小贴士：
-> 
+>
 > 其他受支持的HTTP方法不会被缓存，即使它们与缓存的GET方法放在同一个文件中。
 
 ### 特殊路由处理器(Special Route Handlers)
@@ -65,6 +65,7 @@ export async function GET() {
 
 - 它们不参与页面等布局或客户端导航。
 - 不能有与`page.js`位于同一路由的`route.js`文件。
+
 
 | Page                 | Route              | Result  |
 | -------------------- | ------------------ | ------- |
@@ -202,6 +203,7 @@ export async function GET(
 }
 ```
 
+
 | Route                       | Example URL | `params`                 |
 | --------------------------- | ----------- | ------------------------ |
 | `app/items/[slug]/route.js` | `items/a`   | `Promise<{ slug: 'a' }>` |
@@ -337,7 +339,7 @@ export async function GET(request: Request) {
 ```
 
 > 小贴士
-> 
+>
 > 要将CORS标头添加到多个路由处理程序中，可以使用[Middleware](./13_Middleware.md)或[`next.config.js`](https://nextjs.org/docs/app/api-reference/next-config-js/headers#cors)文件。
 > 或者，请参阅我们的[CORS示例](https://github.com/vercel/examples/blob/main/edge-functions/cors/lib/cors.ts)。
 
@@ -394,3 +396,19 @@ export async function GET() {
 }
 ```
 
+### Segmant Config Options
+
+路由处理程序使用与页面和布局相同的[路由段配置](https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config)。
+
+```javascript
+// app/items/route.ts
+
+export const dynamic = 'auto'
+export const dynamicParams = true
+export const revalidate = false
+export const fetchCache = 'auto'
+export const runtime = 'nodejs'
+export const preferredRegion = 'auto'
+```
+
+有关更多详细信息，请参阅[API参考资料](https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config)。
