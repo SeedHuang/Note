@@ -52,7 +52,7 @@ export async function GET() {
 ```
 
 > 小贴士：
->
+> 
 > 其他受支持的HTTP方法不会被缓存，即使它们与缓存的GET方法放在同一个文件中。
 
 ### 特殊路由处理器(Special Route Handlers)
@@ -65,7 +65,6 @@ export async function GET() {
 
 - 它们不参与页面等布局或客户端导航。
 - 不能有与`page.js`位于同一路由的`route.js`文件。
-
 
 | Page                 | Route              | Result  |
 | -------------------- | ------------------ | ------- |
@@ -203,13 +202,11 @@ export async function GET(
 }
 ```
 
-
 | Route                       | Example URL | `params`                 |
 | --------------------------- | ----------- | ------------------------ |
 | `app/items/[slug]/route.js` | `items/a`   | `Promise<{ slug: 'a' }>` |
 | `app/items/[slug]/route.js` | `items/b`   | `Promise<{ slug: 'b' }>` |
 | `app/items/[slug]/route.js` | `items/c`   | `Promise<{ slug: 'c' }>` |
-
 
 ### URL 参数(URL Query Parameters)
 
@@ -319,3 +316,28 @@ export async function POST(request: Request) {
 ```
 
 由于`formData`数据都是字符串，您可能希望使用[zod-form-data](https://www.npmjs.com/package/zod-form-data)来验证请求，并以您喜欢的格式（例如`number`）检索数据。
+
+### CORS
+
+您可以使用标准Web API方法为特定的路由处理程序设置CORS头：
+
+```javascript
+// app/api/router.ts
+
+export async function GET(request: Request) {
+  return new Response('Hello, Next.js!', {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  })
+}
+```
+
+> 小贴士
+> 
+> 要将CORS标头添加到多个路由处理程序中，可以使用[Middleware](./13_Middleware.md)或[`next.config.js`](https://nextjs.org/docs/app/api-reference/next-config-js/headers#cors)文件。
+> 或者，请参阅我们的CORS示例包。
+
