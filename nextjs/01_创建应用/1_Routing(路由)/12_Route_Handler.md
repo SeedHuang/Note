@@ -93,4 +93,229 @@ export async function POST(request) {}
 
 ### 重新验证缓存数据(Revalidating Cached Data)
 
-您可以使用增量静态再生（ISR）重新验证缓存数据：
+您可以使用[增量静态再生（ISR）](../../3_Data_Fetching/incemental_static_regeneration(ISR).md)重新验证缓存数据：
+
+```javascript
+// app/posts/route.tsx
+
+export const revalidate = 60
+ 
+export async function GET() {
+  const data = await fetch('https://api.vercel.app/blog')
+  const posts = await data.json()
+ 
+  return Response.json(posts)
+}
+```
+
+### Cookies
+
+您可以通过[cookies](../../02_API_Reference/03_Functions/02_cookies.md)来`next/headers`读取或设置Cookie。此服务器函数可以直接在路由处理程序中调用，也可以嵌套在另一个函数中。
+或者，您可以使用[Set-Cookie](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Set-Cookie)标头返回新的响应。
+
+```javascript
+// app/posts/route.ts
+
+import { cookies } from 'next/headers'
+ 
+export async function GET(request: Request) {
+  const cookieStore = await cookies()
+  const token = cookieStore.get('token')
+ 
+  return new Response('Hello, Next.js!', {
+    status: 200,
+    headers: { 'Set-Cookie': `token=${token.value}` },
+  })
+}
+```
+
+您还可以使用底层Web API从请求([NextRequest](../../02_API_Reference/03_Functions/12_NextRequest.md))中读取Cookie：
+
+```javascript
+// app/api/route.ts
+
+import { type NextRequest } from 'next/server'
+ 
+export async function GET(request: NextRequest) {
+  const token = request.cookies.get('token')
+}
+```
+
+### Headers
+
+您可以从`next/headers`中通过[headers](../../02_API_Reference/03_Functions/10_headers.md)方法读区headers。此服务器函数可以直接在路由处理程序中调用，也可以嵌套在另一个函数中。
+此`header`实例是只读的。要设置`header`，您需要返回一个包含新`header`的新`Response`。
+
+```javascript
+// app/api/route.tsx
+
+import { headers } from 'next/headers'
+ 
+export async function GET(request: Request) {
+  const headersList = await headers()
+  const referer = headersList.get('referer')
+ 
+  return new Response('Hello, Next.js!', {
+    status: 200,
+    headers: { referer: referer },
+  })
+}
+```
+
+您还可以使用底层Web API从请求([NextRequest](../../02_API_Reference/03_Functions/12_NextRequest.md))中读取标头：
+
+```javascript
+// app/api/route.ts
+
+import { type NextRequest } from 'next/server'
+ 
+export async function GET(request: NextRequest) {
+  const requestHeaders = new Headers(request.headers)
+}
+```
+
+### Redirects
+
+```javascript
+// app/api/route.ts
+
+import { redirect } from 'next/navigation'
+ 
+export async function GET(request: Request) {
+  redirect('https://nextjs.org/')
+}
+```
+
+### 动态路由片段Dynamic Route Segments
+
+> 我们建议在继续之前阅读“[Defining Routes](./1_Defining_Routes.md)”页面。
+
+路由处理程序可以使用[Dynamic Route(动态片段)](./9_Dynamic_Routes.md)从动态数据创建请求处理程序。
+
+```javascript
+// app/items/[slug]/route.ts
+
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ slug: string }> }
+) {
+  const slug = (await params).slug // 'a', 'b', or 'c'
+}
+```
+
+
+| Route                       | Example URL | `params`                 |
+| --------------------------- | ----------- | ------------------------ |
+| `app/items/[slug]/route.js` | `items/a`   | `Promise<{ slug: 'a' }>` |
+| `app/items/[slug]/route.js` | `items/b`   | `Promise<{ slug: 'b' }>` |
+| `app/items/[slug]/route.js` | `items/c`   | `Promise<{ slug: 'c' }>` |
+
+
+### URL 参数(URL Query Parameters)
+
+传递给路由处理程序的请求对象是一个`NextRequest`实例，它有一些额外的便利方法，包括更容易处理查询参数。
+
+```javascript
+// app/api/search/route.ts
+
+import { type NextRequest } from 'next/server'
+ 
+export function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams
+  const query = searchParams.get('query')
+  // query is "hello" for /api/search?query=hello
+}
+```
+
+### Streaming
+
+流媒体通常与OpenAI等大型语言模型（LLM）结合使用，用于AI生成的内容。了解更多关于[AI SDK](https://sdk.vercel.ai/docs/introduction)的信息。
+
+```javascript
+// app/api/chat/route.ts
+
+import { openai } from '@ai-sdk/openai'
+import { StreamingTextResponse, streamText } from 'ai'
+ 
+export async function POST(req: Request) {
+  const { messages } = await req.json()
+  const result = await streamText({
+    model: openai('gpt-4-turbo'),
+    messages,
+  })
+ 
+  return new StreamingTextResponse(result.toAIStream())
+}
+```
+
+这些抽象使用Web API创建流。您还可以直接使用底层Web API。
+
+```javascript
+// https://developer.mozilla.org/docs/Web/API/ReadableStream#convert_async_iterator_to_stream
+function iteratorToStream(iterator: any) {
+  return new ReadableStream({
+    async pull(controller) {
+      const { value, done } = await iterator.next()
+ 
+      if (done) {
+        controller.close()
+      } else {
+        controller.enqueue(value)
+      }
+    },
+  })
+}
+ 
+function sleep(time: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, time)
+  })
+}
+ 
+const encoder = new TextEncoder()
+ 
+async function* makeIterator() {
+  yield encoder.encode('<p>One</p>')
+  await sleep(200)
+  yield encoder.encode('<p>Two</p>')
+  await sleep(200)
+  yield encoder.encode('<p>Three</p>')
+}
+ 
+export async function GET() {
+  const iterator = makeIterator()
+  const stream = iteratorToStream(iterator)
+ 
+  return new Response(stream)
+}
+```
+
+### Request Body
+
+您可以使用标准Web API方法读取请求`Request` body：
+
+```javascript
+// app/items/route.ts
+
+export async function POST(request: Request) {
+  const res = await request.json()
+  return Response.json({ res })
+}
+```
+
+### Request Body FormData
+
+您可以使用`request.FormData()`函数读取`FormData`：
+
+```javascript
+// app/items/route.ts
+
+export async function POST(request: Request) {
+  const formData = await request.formData()
+  const name = formData.get('name')
+  const email = formData.get('email')
+  return Response.json({ name, email })
+}
+```
+
+由于`formData`数据都是字符串，您可能希望使用[zod-form-data](https://www.npmjs.com/package/zod-form-data)来验证请求，并以您喜欢的格式（例如`number`）检索数据。
