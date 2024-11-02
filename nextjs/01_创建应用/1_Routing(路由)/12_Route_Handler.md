@@ -339,5 +339,58 @@ export async function GET(request: Request) {
 > 小贴士
 > 
 > 要将CORS标头添加到多个路由处理程序中，可以使用[Middleware](./13_Middleware.md)或[`next.config.js`](https://nextjs.org/docs/app/api-reference/next-config-js/headers#cors)文件。
-> 或者，请参阅我们的CORS示例包。
+> 或者，请参阅我们的[CORS示例](https://github.com/vercel/examples/blob/main/edge-functions/cors/lib/cors.ts)。
+
+### WebHooks
+
+您可以使用路由处理程序从第三方服务接收webhooks：
+
+```javascript
+// app/api/route.ts
+
+export async function POST(request: Request) {
+  try {
+    const text = await request.text()
+    // Process the webhook payload
+  } catch (error) {
+    return new Response(`Webhook error: ${error.message}`, {
+      status: 400,
+    })
+  }
+ 
+  return new Response('Success!', {
+    status: 200,
+  })
+}
+```
+
+值得注意的是，与使用页面路由器的API路由不同，您不需要使用`bodyParser`来使用任何额外的配置。
+
+### 无UI的响应(Non-UI Response)
+
+您可以使用路由处理程序返回非UI内容。请注意，[`sitemap.xml`](https://nextjs.org/docs/app/api-reference/file-conventions/metadata/sitemap#generating-a-sitemap-using-code-js-ts)、[`robots.txt`](https://nextjs.org/docs/app/api-reference/file-conventions/metadata/robots#generate-a-robots-file)、[`应用程序图标(app icon)`](https://nextjs.org/docs/app/api-reference/file-conventions/metadata/app-icons#generate-icons-using-code-js-ts-tsx)和[`open graph images`](https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image)都有内置支持。
+
+```javascript
+// app/rss.xml/route.ts
+
+export async function GET() {
+  return new Response(
+    `<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+ 
+<channel>
+  <title>Next.js Documentation</title>
+  <link>https://nextjs.org/docs</link>
+  <description>The React Framework for the Web</description>
+</channel>
+ 
+</rss>`,
+    {
+      headers: {
+        'Content-Type': 'text/xml',
+      },
+    }
+  )
+}
+```
 
